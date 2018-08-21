@@ -8,12 +8,15 @@
 
 #import "COSLJSWrapper.h"
 
+#define debug NSLog
+
 @interface COSLJSWrapper ()
 
 @property (assign) Class class;
 @property (assign) SEL instanceSelector;
 @property (assign) SEL classSelector;
 @property (strong) id instance;
+@property (strong) COSLSymbol *symbol;
 
 @end
 
@@ -23,7 +26,13 @@
     NSLog(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
-
++ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym {
+    
+    COSLJSWrapper *cw = [[self alloc] init];
+    [cw setSymbol:sym];
+    
+    return cw;
+}
 
 + (instancetype)wrapperWithClass:(Class)c {
     COSLJSWrapper *cw = [[self alloc] init];
@@ -71,6 +80,14 @@
     return _classSelector != nil;
 }
 
+- (BOOL)isSymbol {
+    return _symbol != nil;
+}
+
+- (BOOL)isFunction {
+    return [[_symbol symbolType] isEqualToString:@"function"];
+}
+
 - (BOOL)hasClassMethodNamed:(NSString*)m {
     return [_class respondsToSelector:NSSelectorFromString(m)];
 }
@@ -87,12 +104,16 @@
 }
 
 - (id)callMethod {
-    if (_class && _classSelector) {
-        
-        [_class performSelector:_classSelector];
-    }
     
     return nil;
+}
+
+- (void)callFunction {
+    
+    debug(@"_symbol: '%@'", _symbol);
+    
+    #pragma message "FIXME: OH GOD I ACTUALLY HAVE TO DO THIS NOW UGH."
+    
 }
 
 @end

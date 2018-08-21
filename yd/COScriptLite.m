@@ -12,7 +12,9 @@
 #import "COScriptLite.h"
 #import "COSLJSWrapper.h"
 #import "COSLJSWrapper.h"
+#import "COSLBridgeParser.h"
 #import <objc/runtime.h>
+#import <dlfcn.h>
 
 @interface COScriptLite () {
     
@@ -55,6 +57,21 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 + (COScriptLite*)currentCOScriptLite {
     return COSLCurrentCOScriptLite;
 }
+
+
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        [self loadFrameworkAtPath:@"/System/Library/Frameworks/Foundation.framework"];
+        [self loadFrameworkAtPath:@"/System/Library/Frameworks/AppKit.framework"];
+        [self loadFrameworkAtPath:@"/System/Library/Frameworks/CoreImage.framework"];
+    }
+    return self;
+}
+
+
 
 - (void)pushAsCurrentCOSL {
     [self setPreviousCoScript:COSLCurrentCOScriptLite];
@@ -139,6 +156,34 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
     return [super respondsToSelector:aSelector];
 }
 
+- (void)loadFrameworkAtPath:(NSString*)path {
+
+    
+    NSString *frameworkName = [[path lastPathComponent] stringByDeletingPathExtension];
+    debug(@"frameworkName: '%@'", frameworkName);
+    
+    // Load the framework
+    NSString *libPath = [path stringByAppendingPathComponent:frameworkName];
+    void *address = dlopen([libPath UTF8String], RTLD_LAZY);
+    if (!address) {
+        NSLog(@"ERROR: Could not load framework dylib: %@, %@", frameworkName, libPath);
+        return;
+    }
+    
+    NSString *bridgeDylib = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"Resources/BridgeSupport/%@.dylib", frameworkName]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:bridgeDylib]) {
+        address = dlopen([libPath UTF8String], RTLD_LAZY);
+        if (!address) {
+            NSLog(@"ERROR: Could not load BridgeSupport dylib: %@, %@", frameworkName, bridgeDylib);
+        }
+    }
+
+    NSString *bridgeXML = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"Resources/BridgeSupport/%@.bridgesupport", frameworkName]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:bridgeXML]) {
+        [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:bridgeXML];
+    }
+}
+
 + (void)testClassMethod {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
 }
@@ -173,16 +218,43 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     
     COSLJSWrapper *existingWrap = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(object));
     
-    debug(@"existingWrap: '%@'", existingWrap);
+//    debug(@"existingWrap: '%@'", existingWrap);
 //    debug(@"runtime: '%@'", runtime);
 //    debug(@"ctx: '%p'", ctx);
 //    
     debug(@"propertyName: '%@' (%p)", propertyName, object);
 
     
-//
-//    Mocha *runtime = [Mocha runtimeWithContext:ctx];
-//
+    
+    COSLSymbol *sym = [COSLBridgeParser symbolForName:propertyName];
+    if (sym) {
+        
+        
+        if ([[sym symbolType] isEqualToString:@"function"]) {
+            
+            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym];
+            
+            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
+            
+            JSObjectSetPrivate(r, (__bridge void *)(w));
+            
+            CFRetain((__bridge void *)w);
+            
+            return r;
+            
+        }
+        else if ([[sym symbolType] isEqualToString:@"class"]) {
+            debug(@"class!");
+        }
+        
+        
+        
+        
+    }
+    
+    
+    
+    
     
     Class objCClass = NSClassFromString(propertyName);
     if (objCClass && ![propertyName isEqualToString:@"Object"] && ![propertyName isEqualToString:@"Function"]) {
@@ -194,8 +266,6 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         JSObjectSetPrivate(r, (__bridge void *)(w));
         
         CFRetain((__bridge void *)w);
-        
-        debug(@"r: %p (for %@)", r, objCClass);
         
         return r;
     }
@@ -214,13 +284,6 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         
         return r;
     }
-    
-    
-    
-    
-    
-    
-    
     
     
     
@@ -245,6 +308,13 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
     
     COSLJSWrapper *objectToCall = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(thisObject));
     COSLJSWrapper *methodToCall = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(functionJS));
+    
+    
+    if ([methodToCall isFunction]) {
+        [methodToCall callFunction];
+        return nil;
+    }
+    
     
     debug(@"existingWrap: '%@'", objectToCall);
     debug(@"methodToCall: '%@'", methodToCall);

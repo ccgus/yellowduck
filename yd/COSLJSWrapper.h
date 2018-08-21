@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "COSLBridgeParser.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface COSLJSWrapper : NSObject
+
++ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym;
 
 + (instancetype)wrapperWithInstance:(id)instance;
 + (instancetype)wrapperWithClass:(Class)c;
@@ -21,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isInstance;
 - (BOOL)isInstanceMethod;
 - (BOOL)isClassMethod;
+
+- (BOOL)isSymbol;
+- (BOOL)isFunction;
+- (void)callFunction;
 
 - (BOOL)hasClassMethodNamed:(NSString*)m;
 
