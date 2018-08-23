@@ -15,9 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface COSLJSWrapper : NSObject
 
+@property (strong) COSLSymbol *symbol;
+@property (strong) id instance;
+
 + (instancetype)wrapperInCOS:(COScriptLite*)cos;
 + (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso cos:(COScriptLite*)cos;
-+ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym;
++ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym cos:(COScriptLite*)cos;
 
 + (instancetype)wrapperWithInstance:(id)instance;
 + (instancetype)wrapperWithClass:(Class)c;
@@ -37,6 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)wrapperForClassMethodNamed:(NSString*)m;
 
 - (nullable JSValueRef)JSValue;
+
+- (void*)objectStorage;
 
 @end
 

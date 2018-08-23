@@ -215,7 +215,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         return NULL;
     }
     
-    //COScriptLite *runtime = [COScriptLite currentCOScriptLite];
+    COScriptLite *runtime = [COScriptLite currentCOScriptLite];
     
     //COSLJSWrapper *existingWrap = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(object));
     
@@ -233,7 +233,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         
         if ([[sym symbolType] isEqualToString:@"function"]) {
             
-            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym];
+            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym cos:runtime];
             
             JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(w));
             

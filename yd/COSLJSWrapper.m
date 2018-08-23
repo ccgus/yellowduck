@@ -16,8 +16,6 @@
 @property (assign) Class class;
 @property (assign) SEL instanceSelector;
 @property (assign) SEL classSelector;
-@property (strong) id instance;
-@property (strong) COSLSymbol *symbol;
 
 @end
 
@@ -47,10 +45,11 @@
     return nil;
 }
 
-+ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym {
++ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym cos:(COScriptLite*)cos {
     
     COSLJSWrapper *cw = [[self alloc] init];
     [cw setSymbol:sym];
+    [cw setCos:cos];
     
     return cw;
 }
@@ -133,11 +132,14 @@
     
     debug(@"_symbol: '%@'", _symbol);
     
-    
-    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)@"Hello World");
+    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
     JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
     JSStringRelease(string);
     return value;
+}
+
+- (void*)objectStorage {
+    return &_instance;
 }
 
 @end

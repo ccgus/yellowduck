@@ -23,6 +23,7 @@ int main(int argc, const char * argv[]) {
         //[cos evaluateScript:@"s = NSUUID.allocWithZone(null).init(); print(s);"];
         
         [cos evaluateScript:@"print(NSUserName())"];
+        [cos evaluateScript:@"print(NSFullUserName())"];
         //[cos evaluateScript:@"var s = COScriptLite.testClassMethod();"];
         //[cos evaluateScript:@"s = null;"];
         

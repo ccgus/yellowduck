@@ -265,6 +265,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZCN9HJ4VP;
+				OTHER_LDFLAGS = "-lffi";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -274,6 +275,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZCN9HJ4VP;
+				OTHER_LDFLAGS = "-lffi";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
