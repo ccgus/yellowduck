@@ -7,12 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JavaScriptCore.h>
 #import "COSLBridgeParser.h"
+#import "COScriptLite.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface COSLJSWrapper : NSObject
 
++ (instancetype)wrapperInCOS:(COScriptLite*)cos;
++ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso cos:(COScriptLite*)cos;
 + (instancetype)wrapperWithSymbol:(COSLSymbol*)sym;
 
 + (instancetype)wrapperWithInstance:(id)instance;
@@ -27,13 +31,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isSymbol;
 - (BOOL)isFunction;
-- (void)callFunction;
 
 - (BOOL)hasClassMethodNamed:(NSString*)m;
 
 - (instancetype)wrapperForClassMethodNamed:(NSString*)m;
 
-- (id)callMethod;
+- (nullable JSValueRef)JSValue;
 
 @end
 

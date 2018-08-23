@@ -12,6 +12,7 @@
 
 @interface COSLJSWrapper ()
 
+@property (weak) COScriptLite *cos;
 @property (assign) Class class;
 @property (assign) SEL instanceSelector;
 @property (assign) SEL classSelector;
@@ -24,6 +25,26 @@
 
 - (void)dealloc {
     NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+}
+
++ (instancetype)wrapperInCOS:(COScriptLite*)cos {
+    COSLJSWrapper *cw = [[self alloc] init];
+    [cw setCos:cos];
+    return cw;
+}
+
++ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso cos:(COScriptLite*)cos {
+    
+    if (!jso) {
+        return nil;
+    }
+    
+    COSLJSWrapper *wr = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(jso));
+    if (wr) {
+        return wr;
+    }
+    
+    return nil;
 }
 
 + (instancetype)wrapperWithSymbol:(COSLSymbol*)sym {
@@ -108,12 +129,15 @@
     return nil;
 }
 
-- (void)callFunction {
+- (nullable JSValueRef)JSValue {
     
     debug(@"_symbol: '%@'", _symbol);
     
-    #pragma message "FIXME: OH GOD I ACTUALLY HAVE TO DO THIS NOW UGH."
     
+    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)@"Hello World");
+    JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
+    JSStringRelease(string);
+    return value;
 }
 
 @end

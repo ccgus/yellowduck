@@ -13,6 +13,7 @@
 #import "COSLJSWrapper.h"
 #import "COSLJSWrapper.h"
 #import "COSLBridgeParser.h"
+#import "COSLFFI.h"
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
@@ -20,7 +21,7 @@
     
 }
 
-@property (strong) JSContext *jscContext;
+
 @property (weak) COScriptLite *previousCoScript;
 
 @end
@@ -214,9 +215,9 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         return NULL;
     }
     
-    COScriptLite *runtime = [COScriptLite currentCOScriptLite];
+    //COScriptLite *runtime = [COScriptLite currentCOScriptLite];
     
-    COSLJSWrapper *existingWrap = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(object));
+    //COSLJSWrapper *existingWrap = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(object));
     
 //    debug(@"existingWrap: '%@'", existingWrap);
 //    debug(@"runtime: '%@'", runtime);
@@ -234,9 +235,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             
             COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym];
             
-            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
-            
-            JSObjectSetPrivate(r, (__bridge void *)(w));
+            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(w));
             
             CFRetain((__bridge void *)w);
             
@@ -256,40 +255,40 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     
     
     
-    Class objCClass = NSClassFromString(propertyName);
-    if (objCClass && ![propertyName isEqualToString:@"Object"] && ![propertyName isEqualToString:@"Function"]) {
-        
-        COSLJSWrapper *w = [COSLJSWrapper wrapperWithClass:objCClass];
-        
-        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
-        
-        JSObjectSetPrivate(r, (__bridge void *)(w));
-        
-        CFRetain((__bridge void *)w);
-        
-        return r;
-    }
-    
-    if (existingWrap && [existingWrap isClass] && [existingWrap hasClassMethodNamed:propertyName]) {
-        debug(@"class lookup of something…");
-        
-        
-        COSLJSWrapper *w = [existingWrap wrapperForClassMethodNamed:propertyName];
-        
-        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
-        
-        JSObjectSetPrivate(r, (__bridge void *)(w));
-        
-        CFRetain((__bridge void *)w);
-        
-        return r;
-    }
-    
-    
-    
-    if ([propertyName isEqualToString:@"testClassMethod"]) {
-        debug(@"jfkldsajfklds %p", object);
-    }
+//    Class objCClass = NSClassFromString(propertyName);
+//    if (objCClass && ![propertyName isEqualToString:@"Object"] && ![propertyName isEqualToString:@"Function"]) {
+//
+//        COSLJSWrapper *w = [COSLJSWrapper wrapperWithClass:objCClass];
+//
+//        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
+//
+//        JSObjectSetPrivate(r, (__bridge void *)(w));
+//
+//        CFRetain((__bridge void *)w);
+//
+//        return r;
+//    }
+//
+//    if (existingWrap && [existingWrap isClass] && [existingWrap hasClassMethodNamed:propertyName]) {
+//        debug(@"class lookup of something…");
+//
+//
+//        COSLJSWrapper *w = [existingWrap wrapperForClassMethodNamed:propertyName];
+//
+//        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
+//
+//        JSObjectSetPrivate(r, (__bridge void *)(w));
+//
+//        CFRetain((__bridge void *)w);
+//
+//        return r;
+//    }
+//
+//
+//
+//    if ([propertyName isEqualToString:@"testClassMethod"]) {
+//        debug(@"jfkldsajfklds %p", object);
+//    }
     
     return nil;
 }
@@ -304,26 +303,24 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
     
     
-    //COScriptLite *runtime = [COScriptLite currentCOScriptLite];
+    COScriptLite *runtime = [COScriptLite currentCOScriptLite];
     
-    COSLJSWrapper *objectToCall = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(thisObject));
-    COSLJSWrapper *methodToCall = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(functionJS));
+    COSLJSWrapper *objectToCall = [COSLJSWrapper wrapperForJSObject:thisObject cos:runtime];
+    COSLJSWrapper *functionToCall = [COSLJSWrapper wrapperForJSObject:functionJS cos:runtime];
     
-    
-    if ([methodToCall isFunction]) {
-        [methodToCall callFunction];
-        return nil;
+    NSMutableArray *args = [NSMutableArray arrayWithCapacity:argumentCount];
+    for (size_t idx = 0; idx < argumentCount; idx++) {
+        COSLJSWrapper *arg = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)arguments[idx] cos:runtime];
+        assert(arg);
+        [args addObject:arg];
     }
     
-    
-    debug(@"existingWrap: '%@'", objectToCall);
-    debug(@"methodToCall: '%@'", methodToCall);
-    
-    [methodToCall callMethod];
+    COSLFFI *ffi = [COSLFFI ffiWithFunction:functionToCall caller:objectToCall arguments:args cos:runtime];
     
     
+    COSLJSWrapper *ret = [ffi callFunction];
     
-    return nil;
+    return [ret JSValue];
 }
 
 static void COSL_finalize(JSObjectRef object) {
