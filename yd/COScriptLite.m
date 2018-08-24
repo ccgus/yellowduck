@@ -43,7 +43,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 + (void)initialize {
     if (self == [COScriptLite class]) {
         JSClassDefinition COSGlobalClassDefinition      = kJSClassDefinitionEmpty;
-        COSGlobalClassDefinition.className              = "CocoaScript";
+        COSGlobalClassDefinition.className              = "CocoaScriptLite";
         COSGlobalClassDefinition.getProperty            = COSL_getGlobalProperty;
         COSGlobalClassDefinition.initialize             = COSL_initialize;
         COSGlobalClassDefinition.finalize               = COSL_finalize;
@@ -227,7 +227,8 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //    debug(@"ctx: '%p'", ctx);
 //    
     debug(@"propertyName: '%@' (%p)", propertyName, object);
-    if ([propertyName isEqualToString:@"toString"]) {
+    
+    if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"] || [propertyName isEqualToString:@"Symbol.toPrimitive"]) {
         COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object cos:runtime];
         
         debug(@"[w instance]: %@", [w instance]);
@@ -254,6 +255,12 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         }
         else if ([[sym symbolType] isEqualToString:@"class"]) {
             debug(@"class!");
+        }
+        else if ([[sym symbolType] isEqualToString:@"enum"]) {
+            
+            return JSValueMakeNumber(ctx, [[sym runtimeValue] doubleValue]);
+            
+            
         }
         else if ([[sym symbolType] isEqualToString:@"constant"]) {
             

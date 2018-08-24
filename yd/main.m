@@ -18,7 +18,7 @@ int main(int argc, const char * argv[]) {
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
         
-        [cos evaluateScript:@"print(NSAMPMDesignation);"];
+        [cos evaluateScript:@"print(NSFoundationVersionNumber10_9_2);"];
         
         //[cos evaluateScript:@"s = NSUUID.allocWithZone(null).init(); print(s);"];
         
