@@ -46,6 +46,8 @@
     
     COSLJSWrapper *ret = [COSLJSWrapper wrapperInCOS:_cos];
     
+    BOOL objCCall = NO;
+    BOOL blockCall = NO;
     
     // Prepare ffi
     ffi_cif cif;
@@ -53,7 +55,21 @@
     void** values = NULL;
     
     
-    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, (unsigned int)0, &ffi_type_pointer, args);
+    // Build the arguments
+    unsigned int effectiveArgumentCount = (unsigned int)[_args count];
+    if (objCCall) {
+        effectiveArgumentCount += 2;
+    }
+    if (blockCall) {
+        effectiveArgumentCount += 1;
+    }
+    
+    if (effectiveArgumentCount > 0) {
+        args = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
+        values = malloc(sizeof(void *) * effectiveArgumentCount);
+    }
+    fffffffff not tonight
+    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, &ffi_type_pointer, args);
     
     // Call
     if (prep_status == FFI_OK) {

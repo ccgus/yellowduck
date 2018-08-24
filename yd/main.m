@@ -18,7 +18,7 @@ int main(int argc, const char * argv[]) {
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
         
-        [cos evaluateScript:@"print(NSFoundationVersionNumber10_9_2);"];
+        [cos evaluateScript:@"print(NSHomeDirectoryForUser('kirstin'));"];
         
         //[cos evaluateScript:@"s = NSUUID.allocWithZone(null).init(); print(s);"];
         
@@ -30,6 +30,8 @@ int main(int argc, const char * argv[]) {
         [cos garbageCollect];
         
         printf("All done\n");
+        
+        //NSLog(@"%@", NSHomeDirectoryForUser(@"kirstin"));
         
     }
     return 0;
