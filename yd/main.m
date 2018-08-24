@@ -18,12 +18,12 @@ int main(int argc, const char * argv[]) {
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
         
-        //[cos evaluateScript:@"print(NSUUID);"];
+        [cos evaluateScript:@"print(NSAMPMDesignation);"];
         
         //[cos evaluateScript:@"s = NSUUID.allocWithZone(null).init(); print(s);"];
         
-        [cos evaluateScript:@"print(NSUserName())"];
-        [cos evaluateScript:@"print(NSFullUserName())"];
+        //[cos evaluateScript:@"print(NSUserName())"];
+        //[cos evaluateScript:@"print(NSFullUserName())"];
         //[cos evaluateScript:@"var s = COScriptLite.testClassMethod();"];
         //[cos evaluateScript:@"s = null;"];
         

@@ -112,7 +112,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         s = @"<null>";
     }
     
-    printf("%s\n", [s UTF8String]);
+    printf("** %s\n", [s UTF8String]);
 }
 
 - (id)evaluateScript:(NSString *)script withSourceURL:(NSURL *)sourceURL {
@@ -161,7 +161,6 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
     
     NSString *frameworkName = [[path lastPathComponent] stringByDeletingPathExtension];
-    debug(@"frameworkName: '%@'", frameworkName);
     
     // Load the framework
     NSString *libPath = [path stringByAppendingPathComponent:frameworkName];
@@ -192,11 +191,15 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 @end
 
 static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
-    debug(@"%s:%d", __FUNCTION__, __LINE__);
-    id private = (__bridge id)(JSObjectGetPrivate(object));
-    debug(@"private: '%@'", private);
     
-    if (private) {
+    debug(@"COSL_initialize: %@", [COSLJSWrapper wrapperForJSObject:object cos:[COScriptLite currentCOScriptLite]]);
+    
+    
+//    debug(@"%s:%d", __FUNCTION__, __LINE__);
+//    id private = (__bridge id)(JSObjectGetPrivate(object));
+//    debug(@"private: '%@'", private);
+//
+//    if (private) {
 
 //        CFRetain((__bridge CFTypeRef)private);
 
@@ -204,7 +207,7 @@ static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
 //            debug(@"inited a global class object %@ - going to keep it protected", [private representedObject]);
 //            JSValueProtect(ctx, [private JSObject]);
 //        }
-    }
+//    }
 
 
 }
@@ -224,7 +227,14 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //    debug(@"ctx: '%p'", ctx);
 //    
     debug(@"propertyName: '%@' (%p)", propertyName, object);
-
+    if ([propertyName isEqualToString:@"toString"]) {
+        COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object cos:runtime];
+        
+        debug(@"[w instance]: %@", [w instance]);
+        
+        return [w toJSString];
+        
+    }
     
     
     COSLSymbol *sym = [COSLBridgeParser symbolForName:propertyName];
@@ -244,6 +254,24 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         }
         else if ([[sym symbolType] isEqualToString:@"class"]) {
             debug(@"class!");
+        }
+        else if ([[sym symbolType] isEqualToString:@"constant"]) {
+            
+            // Grab symbol
+            void *dlsymbol = dlsym(RTLD_DEFAULT, [propertyName UTF8String]);
+            assert(dlsymbol);
+            
+            assert([[sym runtimeType] hasPrefix:@"@"]);
+            
+            id o = (__bridge id)(*(void**)dlsymbol);
+            COSLJSWrapper *w = [COSLJSWrapper wrapperWithInstance:o cos:runtime];
+            
+            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(w));
+            
+            CFRetain((__bridge void *)w);
+            
+            return r;
+            
         }
         
         

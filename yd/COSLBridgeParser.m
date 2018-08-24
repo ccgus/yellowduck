@@ -126,7 +126,6 @@
             _currentClass = sym;
         }
         else {
-            debug(@"found another instance of %@", [sym name]);
             sym = nil;
         }
         

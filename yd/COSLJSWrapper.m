@@ -16,6 +16,7 @@
 @property (assign) Class class;
 @property (assign) SEL instanceSelector;
 @property (assign) SEL classSelector;
+@property (assign) JSObjectRef nativeJSObj;
 
 @end
 
@@ -42,7 +43,11 @@
         return wr;
     }
     
-    return nil;
+    COSLJSWrapper *native = [COSLJSWrapper new];
+    [native setNativeJSObj:jso];
+    [native setIsJSNative:YES];
+    
+    return native;
 }
 
 + (instancetype)wrapperWithSymbol:(COSLSymbol*)sym cos:(COScriptLite*)cos {
@@ -61,7 +66,7 @@
     return cw;
 }
 
-+ (instancetype)wrapperWithInstance:(id)instance {
++ (instancetype)wrapperWithInstance:(id)instance cos:(COScriptLite*)cos {
     COSLJSWrapper *cw = [[self alloc] init];
     [cw setInstance:instance];
     
@@ -130,6 +135,11 @@
 
 - (nullable JSValueRef)JSValue {
     
+    if (_nativeJSObj) {
+        return _nativeJSObj;
+    }
+    
+    
     debug(@"_symbol: '%@'", _symbol);
     
     JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
@@ -140,6 +150,15 @@
 
 - (void*)objectStorage {
     return &_instance;
+}
+
+- (nullable JSValueRef)toJSString {
+    // TODO: check for numbers, etc, and convert them to the right JS type
+    debug(@"_instance: %@", _instance);
+    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
+    JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
+    JSStringRelease(string);
+    return value;
 }
 
 @end
