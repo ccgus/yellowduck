@@ -7,6 +7,7 @@
 //
 
 #import "COSLJSWrapper.h"
+#import "COSLFFI.h"
 
 #define debug NSLog
 
@@ -150,6 +151,24 @@
 
 - (void*)objectStorage {
     return &_instance;
+}
+
+- (ffi_type)FFIType {
+    
+    if (_symbol) {
+        
+        char c = [[[_symbol returnValue] runtimeType] characterAtIndex:0];
+        
+        if (c) {
+            ffi_type *t;
+            t = [COSLFFI ffiTypeAddressForTypeEncoding:c];
+            
+            return *t;
+        }
+    }
+    
+    
+    return ffi_type_void;
 }
 
 - (nullable JSValueRef)toJSString {

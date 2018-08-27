@@ -9,7 +9,7 @@
 #import "COSLFFI.h"
 #import "COSLJSWrapper.h"
 #import "COScriptLite.h"
-#import <ffi/ffi.h>
+#import <objc/runtime.h>
 #import <dlfcn.h>
 
 @interface COSLFFI ()
@@ -38,16 +38,18 @@
     assert(_f);
     assert([_f isFunction]);
     
-    NSString *functionName = [[_f symbol] name];
+    COSLSymbol *functionSymbol = [_f symbol];
+    assert(functionSymbol);
+    
+    NSString *functionName = [functionSymbol name];
     
     void *callAddress = dlsym(RTLD_DEFAULT, [functionName UTF8String]);
 
     assert(callAddress);
     
-    COSLJSWrapper *ret = [COSLJSWrapper wrapperInCOS:_cos];
+    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] cos:_cos] : nil;
     
     BOOL objCCall = NO;
-    BOOL blockCall = NO;
     
     // Prepare ffi
     ffi_cif cif;
@@ -60,38 +62,78 @@
     if (objCCall) {
         effectiveArgumentCount += 2;
     }
-    if (blockCall) {
-        effectiveArgumentCount += 1;
-    }
-    
+
     if (effectiveArgumentCount > 0) {
         args = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
         values = malloc(sizeof(void *) * effectiveArgumentCount);
     }
-    fffffffff not tonight
-    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, &ffi_type_pointer, args);
+    
+    ffi_type returnType = returnWrapper ? [returnWrapper FFIType] : ffi_type_void;
+    
+    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, &returnType, args);
     
     // Call
     if (prep_status == FFI_OK) {
-        void *storage = [ret objectStorage];
+        void *returnStorage = [returnWrapper objectStorage];
         
         @try {
-            ffi_call(&cif, callAddress, storage, values);
-            CFRetain((CFTypeRef)[ret instance]);
+            ffi_call(&cif, callAddress, returnStorage, values);
+            
+            
+            if (returnWrapper) {
+                
+                if ([returnWrapper instance]) {
+                    
+                    // Yes, this only works for objc types. I'm building things up here…
+                    // Also, I'm in a pizza coma right now zzzzzzz
+                    CFRetain((CFTypeRef)[returnWrapper instance]);
+                }
+                else {
+                    debug(@"got a void return on a function that was supposed to return a value.");
+                }
+            }
+            
+            
         }
         @catch (NSException *e) {
-//            if (effectiveArgumentCount > 0) {
-//                free(args);
-//                free(values);
-//            }
-//            if (exception != NULL) {
-//                *exception = [runtime JSValueForObject:e];
-//            }
-//            return NULL;
+            debug(@"shit: %@", e);
+            if (effectiveArgumentCount > 0) {
+                free(args);
+                free(values);
+            }
+            
+            return NULL;
         }
     }
     
-    return ret;
+    return returnWrapper;
+}
+
++ (ffi_type *)ffiTypeAddressForTypeEncoding:(char)encoding {
+    switch (encoding) {
+        case _C_ID:
+        case _C_CLASS:
+        case _C_SEL:
+        case _C_PTR:
+        case _C_CHARPTR:    return &ffi_type_pointer;
+        case _C_CHR:        return &ffi_type_sint8;
+        case _C_UCHR:       return &ffi_type_uint8;
+        case _C_SHT:        return &ffi_type_sint16;
+        case _C_USHT:       return &ffi_type_uint16;
+        case _C_INT:
+        case _C_LNG:        return &ffi_type_sint32;
+        case _C_UINT:
+        case _C_ULNG:       return &ffi_type_uint32;
+        case _C_LNG_LNG:    return &ffi_type_sint64;
+        case _C_ULNG_LNG:   return &ffi_type_uint64;
+        case _C_FLT:        return &ffi_type_float;
+        case _C_DBL:        return &ffi_type_double;
+        case _C_BOOL:       return &ffi_type_sint8;
+        case _C_VOID:       return &ffi_type_void;
+    }
+    return nil;
 }
 
 @end
+
+

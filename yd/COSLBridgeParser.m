@@ -54,12 +54,6 @@
     [p parse];
     
     
-    COSLSymbol *s = [_symbols objectForKey:@"NSAttributedString"];
-    assert(s);
-    
-    
-    
-    
 }
 
 

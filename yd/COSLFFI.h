@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ffi/ffi.h>
 
 @class COSLJSWrapper;
 @class COScriptLite;
@@ -19,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable COSLJSWrapper*)callFunction;
 
++ (ffi_type *)ffiTypeAddressForTypeEncoding:(char)encoding;
 
 @end
 

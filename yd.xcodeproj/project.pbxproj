@@ -10,6 +10,7 @@
 		CC4D2FC3212B8688009F77EC /* COScriptLite.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4D2FC2212B8688009F77EC /* COScriptLite.m */; };
 		CC54DD87212E674400CE6E30 /* COSLFFI.m in Sources */ = {isa = PBXBuildFile; fileRef = CC54DD86212E674400CE6E30 /* COSLFFI.m */; };
 		CC63F72E212B858C00DCC9AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CC63F72D212B858C00DCC9AA /* main.m */; };
+		CC7DE5532133AA9B00FBC8F7 /* COSLTestStuff.m in Sources */ = {isa = PBXBuildFile; fileRef = CC7DE5522133AA9B00FBC8F7 /* COSLTestStuff.m */; };
 		CC98DCEB212CCAC60066089C /* COSLBridgeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CC98DCEA212CCAC60066089C /* COSLBridgeParser.m */; };
 		CCE403BB212CBAB70006CDE7 /* COSLJSWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE403BA212CBAB70006CDE7 /* COSLJSWrapper.m */; };
 /* End PBXBuildFile section */
@@ -33,6 +34,8 @@
 		CC54DD86212E674400CE6E30 /* COSLFFI.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COSLFFI.m; sourceTree = "<group>"; };
 		CC63F72A212B858C00DCC9AA /* yd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = yd; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC63F72D212B858C00DCC9AA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CC7DE5512133AA9B00FBC8F7 /* COSLTestStuff.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COSLTestStuff.h; sourceTree = "<group>"; };
+		CC7DE5522133AA9B00FBC8F7 /* COSLTestStuff.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COSLTestStuff.m; sourceTree = "<group>"; };
 		CC98DCE9212CCAC60066089C /* COSLBridgeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COSLBridgeParser.h; sourceTree = "<group>"; };
 		CC98DCEA212CCAC60066089C /* COSLBridgeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COSLBridgeParser.m; sourceTree = "<group>"; };
 		CCE403B9212CBAB70006CDE7 /* COSLJSWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COSLJSWrapper.h; sourceTree = "<group>"; };
@@ -78,6 +81,8 @@
 				CCE403BA212CBAB70006CDE7 /* COSLJSWrapper.m */,
 				CC54DD85212E674400CE6E30 /* COSLFFI.h */,
 				CC54DD86212E674400CE6E30 /* COSLFFI.m */,
+				CC7DE5512133AA9B00FBC8F7 /* COSLTestStuff.h */,
+				CC7DE5522133AA9B00FBC8F7 /* COSLTestStuff.m */,
 			);
 			path = yd;
 			sourceTree = "<group>";
@@ -139,6 +144,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC54DD87212E674400CE6E30 /* COSLFFI.m in Sources */,
+				CC7DE5532133AA9B00FBC8F7 /* COSLTestStuff.m in Sources */,
 				CC98DCEB212CCAC60066089C /* COSLBridgeParser.m in Sources */,
 				CC4D2FC3212B8688009F77EC /* COScriptLite.m in Sources */,
 				CCE403BB212CBAB70006CDE7 /* COSLJSWrapper.m in Sources */,

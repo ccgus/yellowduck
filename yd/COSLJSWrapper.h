@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <ffi/ffi.h>
 #import "COSLBridgeParser.h"
 #import "COScriptLite.h"
 
@@ -44,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable JSValueRef)toJSString;
 
 - (void*)objectStorage;
+
+- (ffi_type)FFIType;
 
 @end
 
