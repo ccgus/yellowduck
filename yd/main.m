@@ -14,13 +14,14 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         
-        [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:@"/Volumes/srv/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
+        [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:@"/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
         
         COScriptLite *cos = [COScriptLite new];
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        [cos evaluateScript:@"COSLReturnObject()"];
+        [cos evaluateScript:@"print(COSLMethodNoArgsIDReturn())"];
+        [cos evaluateScript:@"print(COSLMethodStringArgStringReturn('Hello'))"];
         
         //[cos evaluateScript:@"print(NSHomeDirectoryForUser('kirstin'));"];
         

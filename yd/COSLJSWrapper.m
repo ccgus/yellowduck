@@ -141,34 +141,36 @@
     }
     
     
-    debug(@"_symbol: '%@'", _symbol);
+    //debug(@"_symbol: '%@'", _symbol);
     
-    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
-    JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
-    JSStringRelease(string);
-    return value;
+    if (_instance) {
+    
+        JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
+        JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
+        JSStringRelease(string);
+        return value;
+    }
+    
+    return nil;
 }
 
 - (void*)objectStorage {
     return &_instance;
 }
 
-- (ffi_type)FFIType {
+- (ffi_type*)FFIType {
     
     if (_symbol) {
         
-        char c = [[[_symbol returnValue] runtimeType] characterAtIndex:0];
+        char c = [[_symbol runtimeType] characterAtIndex:0];
         
         if (c) {
-            ffi_type *t;
-            t = [COSLFFI ffiTypeAddressForTypeEncoding:c];
-            
-            return *t;
+            return [COSLFFI ffiTypeAddressForTypeEncoding:c];
         }
     }
     
     
-    return ffi_type_void;
+    return &ffi_type_void;
 }
 
 - (nullable JSValueRef)toJSString {

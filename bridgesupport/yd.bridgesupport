@@ -2,15 +2,20 @@
 <!DOCTYPE signatures SYSTEM "file://localhost/System/Library/DTDs/BridgeSupport.dtd">
 <signatures version='1.0'>
 
-<function name='COSLSingleMethod'/>
+<function name='COSLMethodNoArgsNoReturn'/>
 
 
 <function name='COSLSingleArgument'>
 <arg type='@'/>
 </function>
 
-<function name='COSLReturnObject'>
-<retval type='@'/>
+<function name='COSLMethodNoArgsIDReturn'>
+    <retval type='@'/>
+</function>
+
+<function name='COSLMethodStringArgStringReturn'>
+    <arg type='@'/>
+    <retval type='@'/>
 </function>
 
 </signatures>

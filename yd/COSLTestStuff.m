@@ -15,7 +15,7 @@
 @end
 
 
-void COSLSingleMethod(void) {
+void COSLMethodNoArgsNoReturn(void) {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
@@ -24,7 +24,14 @@ void COSLSingleArgument(id obj) {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
-id COSLReturnObject(void) {
+id COSLMethodNoArgsIDReturn(void) {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
-    return @"COSLReturnObject Method Return Value";
+    return @"COSLMethodNoArgsIDReturn Method Return Value";
 }
+
+
+NSString * COSLMethodStringArgStringReturn(NSString *s) {
+    return [NSString stringWithFormat:@"!!%@!!", s];
+}
+
+

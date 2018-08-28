@@ -66,11 +66,29 @@
     if (effectiveArgumentCount > 0) {
         args = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
         values = malloc(sizeof(void *) * effectiveArgumentCount);
+        
+        
+        for (NSInteger idx = 0; idx < [_args count]; idx++) {
+            COSLJSWrapper *arg = [_args objectAtIndex:idx];
+            COSLSymbol *argSym = [[[_f symbol] arguments] objectAtIndex:idx];
+            
+            assert(argSym);
+            
+            if ([arg isJSNative]) {
+                // Convert this to the argSymTupe?
+            }
+            
+            //args[idx] = [arg FFIType];
+            //values[j] = [arg storage];
+            idx++;
+        }
+        
+        
     }
     
-    ffi_type returnType = returnWrapper ? [returnWrapper FFIType] : ffi_type_void;
+    ffi_type *returnType = returnWrapper ? [returnWrapper FFIType] : &ffi_type_void;
     
-    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, &returnType, args);
+    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, returnType, args);
     
     // Call
     if (prep_status == FFI_OK) {

@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void*)objectStorage;
 
-- (ffi_type)FFIType;
+- (ffi_type*)FFIType;
 
 @end
 

@@ -40,6 +40,7 @@
 		CC98DCEA212CCAC60066089C /* COSLBridgeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COSLBridgeParser.m; sourceTree = "<group>"; };
 		CCE403B9212CBAB70006CDE7 /* COSLJSWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = COSLJSWrapper.h; sourceTree = "<group>"; };
 		CCE403BA212CBAB70006CDE7 /* COSLJSWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = COSLJSWrapper.m; sourceTree = "<group>"; };
+		CCE5EFFD2135094D00EA6D7F /* yd.bridgesupport */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = yd.bridgesupport; path = bridgesupport/yd.bridgesupport; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +84,7 @@
 				CC54DD86212E674400CE6E30 /* COSLFFI.m */,
 				CC7DE5512133AA9B00FBC8F7 /* COSLTestStuff.h */,
 				CC7DE5522133AA9B00FBC8F7 /* COSLTestStuff.m */,
+				CCE5EFFD2135094D00EA6D7F /* yd.bridgesupport */,
 			);
 			path = yd;
 			sourceTree = "<group>";

@@ -192,7 +192,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
     
-    debug(@"COSL_initialize: %@", [COSLJSWrapper wrapperForJSObject:object cos:[COScriptLite currentCOScriptLite]]);
+    //debug(@"COSL_initialize: %@", [COSLJSWrapper wrapperForJSObject:object cos:[COScriptLite currentCOScriptLite]]);
     
     
 //    debug(@"%s:%d", __FUNCTION__, __LINE__);
@@ -226,7 +226,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //    debug(@"runtime: '%@'", runtime);
 //    debug(@"ctx: '%p'", ctx);
 //    
-    debug(@"propertyName: '%@' (%p)", propertyName, object);
+    //debug(@"propertyName: '%@' (%p)", propertyName, object);
     
     if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"] || [propertyName isEqualToString:@"Symbol.toPrimitive"]) {
         COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object cos:runtime];
