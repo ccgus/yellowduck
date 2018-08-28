@@ -18,4 +18,10 @@
     <retval type='@'/>
 </function>
 
+<function name='COSLMethodStringSringArgStringReturn'>
+    <arg type='@'/>
+    <arg type='@'/>
+    <retval type='@'/>
+</function>
+
 </signatures>

@@ -24,7 +24,7 @@
 @implementation COSLJSWrapper
 
 - (void)dealloc {
-    NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    //NSLog(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
 + (instancetype)wrapperInCOS:(COScriptLite*)cos {
@@ -47,6 +47,7 @@
     COSLJSWrapper *native = [COSLJSWrapper new];
     [native setNativeJSObj:jso];
     [native setIsJSNative:YES];
+    [native setCos:cos];
     
     return native;
 }
@@ -169,7 +170,7 @@
         }
     }
     
-    
+    debug(@"NO SYMBOL IN WRAPPER: %@", self);
     return &ffi_type_void;
 }
 
@@ -180,6 +181,20 @@
     JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
     JSStringRelease(string);
     return value;
+}
+
+- (BOOL)pushJSValueToNativeType:(NSString*)type {
+    
+    
+    if (JSValueIsString([[_cos jscContext] JSGlobalContextRef], _nativeJSObj)) {
+        JSStringRef resultStringJS = JSValueToStringCopy([[_cos jscContext] JSGlobalContextRef], _nativeJSObj, NULL);
+        _instance = (NSString *)CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, resultStringJS));
+        JSStringRelease(resultStringJS);
+        return YES;
+    }
+    
+    
+    return YES;
 }
 
 @end

@@ -34,4 +34,8 @@ NSString * COSLMethodStringArgStringReturn(NSString *s) {
     return [NSString stringWithFormat:@"!!%@!!", s];
 }
 
+NSString * COSLMethodStringSringArgStringReturn(NSString *a, NSString *b) {
+    return [NSString stringWithFormat:@"++!!%@.%@!!", a, b];
+}
+
 

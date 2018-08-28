@@ -56,7 +56,6 @@
     ffi_type** args = NULL;
     void** values = NULL;
     
-    
     // Build the arguments
     unsigned int effectiveArgumentCount = (unsigned int)[_args count];
     if (objCCall) {
@@ -76,14 +75,13 @@
             
             if ([arg isJSNative]) {
                 // Convert this to the argSymTupe?
+                [arg pushJSValueToNativeType:[argSym runtimeType]];
+                [arg setSymbol:argSym];
             }
             
-            //args[idx] = [arg FFIType];
-            //values[j] = [arg storage];
-            idx++;
+            args[idx]   = [arg FFIType];
+            values[idx] = [arg objectStorage];
         }
-        
-        
     }
     
     ffi_type *returnType = returnWrapper ? [returnWrapper FFIType] : &ffi_type_void;
@@ -122,6 +120,11 @@
             
             return NULL;
         }
+    }
+    
+    if (effectiveArgumentCount > 0) {
+        free(args);
+        free(values);
     }
     
     return returnWrapper;

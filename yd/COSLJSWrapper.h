@@ -45,8 +45,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable JSValueRef)toJSString;
 
 - (void*)objectStorage;
+- (BOOL)pushJSValueToNativeType:(NSString*)type;
 
 - (ffi_type*)FFIType;
+
+
 
 @end
 

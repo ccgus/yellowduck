@@ -20,8 +20,8 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        [cos evaluateScript:@"print(COSLMethodNoArgsIDReturn())"];
-        [cos evaluateScript:@"print(COSLMethodStringArgStringReturn('Hello'))"];
+        //[cos evaluateScript:@"print(COSLMethodNoArgsIDReturn())"];
+        [cos evaluateScript:@"print(COSLMethodStringSringArgStringReturn('Hello', 'World'))"];
         
         //[cos evaluateScript:@"print(NSHomeDirectoryForUser('kirstin'));"];
         
