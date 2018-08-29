@@ -48,4 +48,13 @@ void COSLMethodPleasePassNSNumber3(NSNumber *n) {
     COSLTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 3;
 }
 
+NSDictionary * COSLMethodReturnNSDictionary(void) {
+    return @{@"theKey": @(42)};
+}
+void COSLMethodCheckNSDictionary(NSDictionary *d) {
+    
+    NSNumber *n = [d objectForKey:@"theKey"];
+    COSLTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 42;
+}
+
 

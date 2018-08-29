@@ -148,11 +148,16 @@
     //debug(@"_symbol: '%@'", _symbol);
     
     if (_instance) {
-    
-        JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
-        JSValueRef value = JSValueMakeString([[_cos jscContext] JSGlobalContextRef], string);
-        JSStringRelease(string);
-        return value;
+        
+        JSValueRef vr = [COSLJSWrapper nativeObjectToJSValue:_instance inJSContext:[[_cos jscContext] JSGlobalContextRef]];
+        
+        if (vr) {
+            return vr;
+        }
+        
+        
+        // wrap ourself in … what? set a [private object here?
+        
     }
     
     return nil;
@@ -215,6 +220,30 @@
     }
     
     assert(NO);
+    
+    return nil;
+}
+
++ (JSValueRef)nativeObjectToJSValue:(id)o inJSContext:(JSContextRef)context {
+    
+    if ([o isKindOfClass:[NSString class]]) {
+        
+        JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)o);
+        JSValueRef value = JSValueMakeString(context, string);
+        JSStringRelease(string);
+        return value;
+    }
+    
+    else if ([o isKindOfClass:[NSNumber class]]) {
+        
+        if (strcmp([o objCType], @encode(BOOL)) == 0) {
+            return JSValueMakeBoolean(context, [o boolValue]);
+        }
+        else {
+            return JSValueMakeNumber(context, [o doubleValue]);
+        }
+
+    }
     
     return nil;
 }

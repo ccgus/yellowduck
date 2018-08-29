@@ -21,7 +21,10 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        //[cos evaluateScript:@"print(COSLMethodNoArgsIDReturn())"];
+        COSLTestStuffTestPassed = NO;
+        [cos evaluateScript:@"COSLMethodCheckNSDictionary(COSLMethodReturnNSDictionary());"];
+        assert(COSLTestStuffTestPassed);
+        
         COSLTestStuffTestPassed = NO;
         [cos evaluateScript:@"print(COSLMethodStringSringArgStringReturn('Hello', 'World'))"];
         assert(COSLTestStuffTestPassed);
@@ -29,6 +32,7 @@ int main(int argc, const char * argv[]) {
         COSLTestStuffTestPassed = NO;
         [cos evaluateScript:@"COSLMethodPleasePassNSNumber3(3);"];
         assert(COSLTestStuffTestPassed);
+        
         
         //[cos evaluateScript:@"print(NSHomeDirectoryForUser('kirstin'));"];
         

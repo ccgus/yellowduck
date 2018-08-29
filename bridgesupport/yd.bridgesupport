@@ -17,6 +17,14 @@
     <retval type='@'/>
 </function>
 
+<function name='COSLMethodReturnNSDictionary'>
+    <retval type='@'/>
+</function>
+
+<function name='COSLMethodCheckNSDictionary'>
+    <arg type='@'/>
+</function>
+
 <function name='COSLMethodStringArgStringReturn'>
     <arg type='@'/>
     <retval type='@'/>
