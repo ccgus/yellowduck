@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+extern BOOL COSLTestStuffTestPassed;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface COSLTestStuff : NSObject
@@ -15,3 +17,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+

@@ -39,9 +39,12 @@
         return nil;
     }
     
-    COSLJSWrapper *wr = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(jso));
-    if (wr) {
-        return wr;
+    
+    if (JSValueIsObject([[cos jscContext] JSGlobalContextRef], jso)) {
+        COSLJSWrapper *wr = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(jso));
+        if (wr) {
+            return wr;
+        }
     }
     
     COSLJSWrapper *native = [COSLJSWrapper new];
@@ -185,16 +188,38 @@
 
 - (BOOL)pushJSValueToNativeType:(NSString*)type {
     
+    _instance = [COSLJSWrapper nativeObjectFromJSValue:_nativeJSObj inJSContext:[[_cos jscContext] JSGlobalContextRef]];
     
-    if (JSValueIsString([[_cos jscContext] JSGlobalContextRef], _nativeJSObj)) {
-        JSStringRef resultStringJS = JSValueToStringCopy([[_cos jscContext] JSGlobalContextRef], _nativeJSObj, NULL);
-        _instance = (NSString *)CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, resultStringJS));
+    
+    return _instance != nil;
+}
+
++ (id)nativeObjectFromJSValue:(JSValueRef)jsValue inJSContext:(JSContextRef)context {
+    
+    if (JSValueIsString(context, jsValue)) {
+        JSStringRef resultStringJS = JSValueToStringCopy(context, jsValue, NULL);
+        id o = (NSString *)CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, resultStringJS));
         JSStringRelease(resultStringJS);
-        return YES;
+        return o;
     }
     
     
-    return YES;
+    if (JSValueIsNumber(context, jsValue)) {
+        double v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if (JSValueIsBoolean(context, jsValue)) {
+        bool v = JSValueToBoolean(context, jsValue);
+        return @(v);
+    }
+    
+    assert(NO);
+    
+    return nil;
 }
 
 @end
+
+
+

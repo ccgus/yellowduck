@@ -10,6 +10,8 @@
 
 #define debug NSLog
 
+BOOL COSLTestStuffTestPassed;
+
 @implementation COSLTestStuff
 
 @end
@@ -22,20 +24,28 @@ void COSLMethodNoArgsNoReturn(void) {
 
 void COSLSingleArgument(id obj) {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
+    COSLTestStuffTestPassed = YES;
 }
 
 id COSLMethodNoArgsIDReturn(void) {
     debug(@"%s:%d", __FUNCTION__, __LINE__);
+    COSLTestStuffTestPassed = YES;
     return @"COSLMethodNoArgsIDReturn Method Return Value";
 }
 
 
 NSString * COSLMethodStringArgStringReturn(NSString *s) {
+    COSLTestStuffTestPassed = YES;
     return [NSString stringWithFormat:@"!!%@!!", s];
 }
 
 NSString * COSLMethodStringSringArgStringReturn(NSString *a, NSString *b) {
+    COSLTestStuffTestPassed = YES;
     return [NSString stringWithFormat:@"++!!%@.%@!!", a, b];
+}
+
+void COSLMethodPleasePassNSNumber3(NSNumber *n) {
+    COSLTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 3;
 }
 
 
