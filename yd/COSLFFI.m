@@ -8,7 +8,7 @@
 
 #import "COSLFFI.h"
 #import "COSLJSWrapper.h"
-#import "COScriptLite.h"
+#import "COSLRuntime.h"
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
@@ -16,13 +16,13 @@
 @property (weak) COSLJSWrapper *f;
 @property (weak) COSLJSWrapper *caller;
 @property (strong) NSArray *args;
-@property (weak) COScriptLite *cos;
+@property (weak) COSLRuntime *cos;
 @end
 
 @implementation COSLFFI
 
 
-+ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COScriptLite*)cos {
++ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COSLRuntime*)cos {
     
     COSLFFI *ffi = [COSLFFI new];
     [ffi setF:f];
@@ -47,7 +47,7 @@
 
     assert(callAddress);
     
-    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] cos:_cos] : nil;
+    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] runtime:_cos] : nil;
     
     BOOL objCCall = NO;
     

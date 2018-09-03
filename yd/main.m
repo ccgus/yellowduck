@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "COScriptLite.h"
+#import "COSLRuntime.h"
 #import "COSLBridgeParser.h"
 #import "COSLTestStuff.h"
 #import <objc/runtime.h>
@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
         
         [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:@"/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
         
-        COScriptLite *cos = [COScriptLite new];
+        COSLRuntime *cos = [COSLRuntime new];
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         

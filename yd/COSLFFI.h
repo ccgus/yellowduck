@@ -10,13 +10,13 @@
 #import <ffi/ffi.h>
 
 @class COSLJSWrapper;
-@class COScriptLite;
+@class COSLRuntime;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface COSLFFI : NSObject
 
-+ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COScriptLite*)cos;
++ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COSLRuntime*)cos;
 
 - (nullable COSLJSWrapper*)callFunction;
 

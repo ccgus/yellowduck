@@ -23,12 +23,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface COScriptLite : NSObject <COScriptLiteJavaScriptMethods>
+@interface COSLRuntime : NSObject <COScriptLiteJavaScriptMethods>
 
 @property (strong) JSContext *jscContext;
 
 - (id)evaluateScript:(NSString*)str;
 - (id)evaluateScript:(NSString *)script withSourceURL:(NSURL *)sourceURL;
+
+- (JSValueRef)setRuntimeObject:(id)object withName:(NSString *)name;
 
 - (void)garbageCollect;
 

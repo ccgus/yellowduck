@@ -10,7 +10,7 @@
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <ffi/ffi.h>
 #import "COSLBridgeParser.h"
-#import "COScriptLite.h"
+#import "COSLRuntime.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,10 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) COSLSymbol *symbol;
 @property (strong) id instance;
 
-+ (instancetype)wrapperInCOS:(COScriptLite*)cos;
-+ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso cos:(COScriptLite*)cos;
-+ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym cos:(COScriptLite*)cos;
-+ (instancetype)wrapperWithInstance:(id)instance cos:(COScriptLite*)cos;
++ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(COSLRuntime*)runtime;
++ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym runtime:(COSLRuntime*)runtime;
++ (instancetype)wrapperWithInstance:(id)instance runtime:(COSLRuntime*)runtime;
 
 + (instancetype)wrapperWithClass:(Class)c;
 + (instancetype)wrapperWithInstanceMethod:(SEL)selector;
