@@ -21,6 +21,8 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
+        [cos evaluateScript:@"print(COSLMethodReturnNSDictionary());"];
+        
         COSLTestStuffTestPassed = NO;
         [cos evaluateScript:@"COSLMethodCheckNSDictionary(COSLMethodReturnNSDictionary());"];
         assert(COSLTestStuffTestPassed);

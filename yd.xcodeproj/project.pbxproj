@@ -273,6 +273,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZCN9HJ4VP;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "-lffi";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -283,6 +284,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = WZCN9HJ4VP;
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				OTHER_LDFLAGS = "-lffi";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

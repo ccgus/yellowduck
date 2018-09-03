@@ -188,6 +188,16 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
     debug(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
+- (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w {
+    
+    FMAssert(![w isJSNative]);
+    
+    JSObjectRef r = JSObjectMake([[self jscContext] JSGlobalContextRef], COSLGlobalClass, (__bridge void *)(w));
+    CFRetain((__bridge void *)w);
+    
+    return r;
+}
+
 @end
 
 static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
@@ -231,10 +241,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"] || [propertyName isEqualToString:@"Symbol.toPrimitive"]) {
         COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object cos:runtime];
         
-        debug(@"[w instance]: %@", [w instance]);
-        
         return [w toJSString];
-        
     }
     
     
@@ -246,11 +253,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             
             COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym cos:runtime];
             
-            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(w));
-            
-            CFRetain((__bridge void *)w);
-            
-            return r;
+            return [runtime newJSValueForWrapper:w];
             
         }
         else if ([[sym symbolType] isEqualToString:@"class"]) {
@@ -355,7 +358,9 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
     
     COSLJSWrapper *ret = [ffi callFunction];
     
-    return [ret JSValue];
+    JSValueRef returnRef = [ret JSValue];
+    
+    return returnRef;
 }
 
 static void COSL_finalize(JSObjectRef object) {

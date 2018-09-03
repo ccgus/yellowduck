@@ -9,9 +9,11 @@
 #import <Foundation/Foundation.h>
 
 #define debug NSLog
+#define FMAssert assert
 
 @import JavaScriptCore;
 
+@class COSLJSWrapper;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (id)evaluateScript:(NSString *)script withSourceURL:(NSURL *)sourceURL;
 
 - (void)garbageCollect;
+
+- (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w;
 
 @end
 

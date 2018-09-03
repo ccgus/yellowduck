@@ -155,6 +155,7 @@
             return vr;
         }
         
+        return [_cos newJSValueForWrapper:self];
         
         // wrap ourself in … what? set a [private object here?
         
@@ -242,8 +243,8 @@
         else {
             return JSValueMakeNumber(context, [o doubleValue]);
         }
-
     }
+    
     
     return nil;
 }
