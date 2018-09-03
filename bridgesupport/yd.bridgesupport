@@ -2,11 +2,17 @@
 <!DOCTYPE signatures SYSTEM "file://localhost/System/Library/DTDs/BridgeSupport.dtd">
 <signatures version='1.0'>
 
+
+<function name='print'>
+    <arg type='@'/>
+</function>
+
+
 <function name='COSLMethodNoArgsNoReturn'/>
 
 
 <function name='COSLSingleArgument'>
-<arg type='@'/>
+    <arg type='@'/>
 </function>
 
 <function name='COSLMethodPleasePassNSNumber3'>

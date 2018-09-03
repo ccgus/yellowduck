@@ -92,9 +92,9 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
             debug(@"Exception: %@", exception);
         }];
         
-        __weak __typeof__(self) weakSelf = self;
-        [_jscContext setObject:^(NSString *s) { [weakSelf log:s]; } forKeyedSubscript:@"log"];
-        [_jscContext setObject:^(NSString *s) { [weakSelf log:s]; } forKeyedSubscript:@"print"];
+//        __weak __typeof__(self) weakSelf = self;
+//        [_jscContext setObject:^(id s) { [weakSelf log:s]; } forKeyedSubscript:@"log"];
+//        [_jscContext setObject:^(id s) { [weakSelf log:s]; } forKeyedSubscript:@"print"];
         [_jscContext setObject:self forKeyedSubscript:COSLRuntimeLookupKey];
         
     }
@@ -104,15 +104,6 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 - (void)garbageCollect {
     JSGarbageCollect([_jscContext JSGlobalContextRef]);
-}
-
-- (void)log:(NSString*)s {
-    
-    if (!s) {
-        s = @"<null>";
-    }
-    
-    printf("** %s\n", [s UTF8String]);
 }
 
 - (id)evaluateScript:(NSString *)script withSourceURL:(NSURL *)sourceURL {
@@ -190,6 +181,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 - (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w {
     
+    // This should only be called for non-js objects.
     FMAssert(![w isJSNative]);
     
     JSObjectRef r = JSObjectMake([[self jscContext] JSGlobalContextRef], COSLGlobalClass, (__bridge void *)(w));
@@ -236,9 +228,9 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //    debug(@"runtime: '%@'", runtime);
 //    debug(@"ctx: '%p'", ctx);
 //    
-    //debug(@"propertyName: '%@' (%p)", propertyName, object);
+    debug(@"propertyName: '%@' (%p)", propertyName, object);
     
-    if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"] || [propertyName isEqualToString:@"Symbol.toPrimitive"]) {
+    if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"]/* || [propertyName isEqualToString:@"Symbol.toPrimitive"]*/) {
         COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object cos:runtime];
         
         return [w toJSString];
@@ -371,6 +363,13 @@ static void COSL_finalize(JSObjectRef object) {
     }
 }
 
+void print(id s) {
+    if (!s) {
+        s = @"<null>";
+    }
+    
+    printf("** %s\n", [[s description] UTF8String]);
+}
 
 /*
  

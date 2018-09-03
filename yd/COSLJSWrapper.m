@@ -144,9 +144,6 @@
         return _nativeJSObj;
     }
     
-    
-    //debug(@"_symbol: '%@'", _symbol);
-    
     if (_instance) {
         
         JSValueRef vr = [COSLJSWrapper nativeObjectToJSValue:_instance inJSContext:[[_cos jscContext] JSGlobalContextRef]];
@@ -156,9 +153,6 @@
         }
         
         return [_cos newJSValueForWrapper:self];
-        
-        // wrap ourself in … what? set a [private object here?
-        
     }
     
     return nil;
