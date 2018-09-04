@@ -261,6 +261,41 @@
     return [NSString stringWithFormat:@"<%@: %p %@ %@>", NSStringFromClass([self class]), self, _name, _runtimeType];
 }
 
+- (COSLSymbol*)classMethodNamed:(NSString*)name {
+    
+    assert([[self symbolType] isEqualToString:@"class"]);
+    
+    for (COSLSymbol *sym in _classMethods) {
+        if ([[sym name] isEqualToString:name]) {
+            return sym;
+        }
+    }
+    
+    // HRM.
+    
+    Class c = NSClassFromString([self name]);
+    assert(c); // We have to exist, right?
+    
+    if ([c respondsToSelector:NSSelectorFromString(name)]) {
+        debug(@"Found class method '%@' in the runtime", name);
+    }
+    
+    
+    
+    
+    return nil;
+}
+
+- (COSLSymbol*)instanceMethodNamed:(NSString*)name {
+    for (COSLSymbol *sym in _instanceMethods) {
+        if ([[sym name] isEqualToString:name]) {
+            return sym;
+        }
+    }
+    
+    return nil;
+}
+
 @end
 
 

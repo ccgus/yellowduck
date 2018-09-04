@@ -2,9 +2,18 @@
 <!DOCTYPE signatures SYSTEM "file://localhost/System/Library/DTDs/BridgeSupport.dtd">
 <signatures version='1.0'>
 
+<class name='COSLTestStuff'>
+    <method selector='testMethod'>
+    </method>
+</class>
 
 <function name='print'>
     <arg type='@'/>
+</function>
+
+
+<function name='COSLAssert'>
+    <arg type='b'/>
 </function>
 
 

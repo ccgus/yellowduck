@@ -44,6 +44,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addClassMethod:(COSLSymbol*)sym;
 - (void)addInstanceMethod:(COSLSymbol*)sym;
 
+- (COSLSymbol*)classMethodNamed:(NSString*)name;
+- (COSLSymbol*)instanceMethodNamed:(NSString*)name;
+
 @end
 
 NS_ASSUME_NONNULL_END

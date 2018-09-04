@@ -34,7 +34,6 @@
         return nil;
     }
     
-    
     if (JSValueIsObject([[runtime jscContext] JSGlobalContextRef], jso)) {
         COSLJSWrapper *wr = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(jso));
         if (wr) {

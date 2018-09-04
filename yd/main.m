@@ -36,6 +36,8 @@ int main(int argc, const char * argv[]) {
         [cos evaluateScript:@"COSLMethodPleasePassNSNumber3(3);"];
         assert(COSLTestStuffTestPassed);
         
+        [cos evaluateScript:@"var c = COSLTestStuff.new(); COSLAssert(c != null);"];
+        
         
         //[cos evaluateScript:@"print(NSHomeDirectoryForUser('kirstin'));"];
         

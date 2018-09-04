@@ -34,7 +34,7 @@ static JSClassRef COSLGlobalClass = NULL;
 static void COSL_initialize(JSContextRef ctx, JSObjectRef object);
 static void COSL_finalize(JSObjectRef object);
 JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception);
-//static bool COSL_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
+static bool COSL_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
 static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception);
 
 @implementation COSLRuntime
@@ -47,7 +47,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         COSGlobalClassDefinition.getProperty            = COSL_getGlobalProperty;
         COSGlobalClassDefinition.initialize             = COSL_initialize;
         COSGlobalClassDefinition.finalize               = COSL_finalize;
-        //COSGlobalClassDefinition.hasProperty            = COSL_hasProperty;
+        //COSGlobalClassDefinition.hasProperty            = COSL_hasProperty; // If we don't have this, getProperty gets called twice.
         COSGlobalClassDefinition.callAsFunction         = COSL_callAsFunction;
         COSLGlobalClass                                 = JSClassCreate(&COSGlobalClassDefinition);
 
@@ -287,7 +287,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     
     COSLRuntime *runtime = [COSLRuntime runtimeInContext:ctx];
     
-    debug(@"propertyName: '%@' (%p)", propertyName, object);
+    //debug(@"propertyName: '%@' (%p)", propertyName, object);
     
     if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"]/* || [propertyName isEqualToString:@"Symbol.toPrimitive"]*/) {
         COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object runtime:runtime];
@@ -295,26 +295,31 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         return [w toJSString];
     }
     
+    COSLJSWrapper *objectWrapper = [COSLJSWrapper wrapperForJSObject:object runtime:runtime];
+    debug(@"objectWrapper: '%@' (%p) %p %d", objectWrapper, object, JSContextGetGlobalObject(ctx), JSValueGetType(ctx, object));
     
     COSLSymbol *sym = [COSLBridgeParser symbolForName:propertyName];
     if (sym) {
-        
         
         if ([[sym symbolType] isEqualToString:@"function"]) {
             
             COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
             
             return [runtime newJSValueForWrapper:w];
-            
         }
         else if ([[sym symbolType] isEqualToString:@"class"]) {
-            debug(@"class!");
+            
+            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
+            debug(@"COSLJSWrapper class: '%@'", w);
+            
+            JSValueRef val = [runtime newJSValueForWrapper:w];
+            
+            debug(@"JSValueRef: '%p'", val);
+            
+            return val;
         }
         else if ([[sym symbolType] isEqualToString:@"enum"]) {
-            
             return JSValueMakeNumber(ctx, [[sym runtimeValue] doubleValue]);
-            
-            
         }
         else if ([[sym symbolType] isEqualToString:@"constant"]) {
             
@@ -332,14 +337,29 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             CFRetain((__bridge void *)w);
             
             return r;
+        }
+    }
+    
+    if ([objectWrapper symbol]) {
+        // We have a symbol of some sort!
+        // Maybe we're going to call a method on a class.
+        
+        if ([[[objectWrapper symbol] symbolType] isEqualToString:@"class"]) {
+            // Look up a method on it I guess?
+            debug(@"looking up a method or property on %@", [[objectWrapper symbol] name]);
+            
+            COSLSymbol *classMethod = [[objectWrapper symbol] classMethodNamed:propertyName];
+            debug(@"classMethod: '%@'", classMethod);
             
         }
         
         
         
         
+        
+        
+        
     }
-    
     
     
     
@@ -427,6 +447,10 @@ void print(id s) {
     }
     
     printf("** %s\n", [[s description] UTF8String]);
+}
+
+void COSLAssert(BOOL b) {
+    FMAssert(b);
 }
 
 /*
