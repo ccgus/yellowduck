@@ -33,10 +33,81 @@
     return ffi;
 }
 
+- (nullable COSLJSWrapper*)objcInvoke {
+    assert([_caller instance]);
+    COSLSymbol *functionSymbol = [_f symbol];
+    assert(functionSymbol);
+    NSString *methodName = [functionSymbol name];
+    COSLJSWrapper *returnWrapper = nil;
+    
+    @try {
+        
+        SEL selector = NSSelectorFromString(methodName);
+        
+        id object = [_caller instance];
+        
+        NSMethodSignature *methodSignature = [object methodSignatureForSelector:selector];
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
+
+//        [invocation retainArguments]; // need to do this for release builds, because it seems ARC likes to let go of our strings early otherwise.
+//
+        [invocation setTarget:object];
+        [invocation setSelector:selector];
+        
+        
+        NSUInteger methodArgumentCount = [methodSignature numberOfArguments] - 2;
+        if (methodArgumentCount != [_args count]) {
+            NSString *reason = [NSString stringWithFormat:@"ObjC method %@ requires %lu %@, but JavaScript passed %zd %@", NSStringFromSelector(selector), methodArgumentCount, (methodArgumentCount == 1 ? @"argument" : @"arguments"), [_args count], ([_args count] == 1 ? @"argument" : @"arguments")];
+            assert(NO);
+//            NSException *e = [NSException exceptionWithName:MORuntimeException reason:reason userInfo:nil];
+//            if (exception != NULL) {
+//                *exception = [runtime JSValueForObject:e];
+//            }
+//            return NULL;
+        }
+        
+    // TODO: set arguments.
+        
+        // Invoke
+        [invocation invoke];
+        
+        const char * returnType = [methodSignature methodReturnType];
+        JSValueRef returnValue = NULL;
+        if (strcmp(returnType, @encode(void)) == 0) {
+            returnValue = JSValueMakeUndefined([_cos contextRef]);
+            returnWrapper = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)returnValue runtime:_cos];
+        }
+        // id
+        else if (strcmp(returnType, @encode(id)) == 0
+                 || strcmp(returnType, @encode(Class)) == 0) {
+            id object = nil;
+            [invocation getReturnValue:&object];
+            
+            CFRetain((CFTypeRef)object);
+            
+            returnWrapper = [COSLJSWrapper wrapperWithInstance:object runtime:_cos];
+            
+        }
+        
+    }
+    @catch (NSException *e) {
+        
+        assert(NO);
+        return NULL;
+    }
+    
+    return returnWrapper;
+}
+
+
 - (nullable COSLJSWrapper*)callFunction {
     
     assert(_f);
-    assert([_f isFunction]);
+    assert([_f isFunction] || [_f isClassMethod] || [_f isInstanceMethod]);
+    
+    if ([_f isClassMethod] || [_f isInstanceMethod]) {
+        return [self objcInvoke];
+    }
     
     COSLSymbol *functionSymbol = [_f symbol];
     assert(functionSymbol);

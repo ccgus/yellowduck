@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) NSMutableArray *classMethods;
 @property (strong) NSMutableArray *instanceMethods;
 @property (strong) COSLSymbol *returnValue;
+@property (assign) BOOL isClassMethod;
 
 - (void)addArgument:(COSLSymbol*)sym;
 

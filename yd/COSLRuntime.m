@@ -296,12 +296,22 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     }
     
     COSLJSWrapper *objectWrapper = [COSLJSWrapper wrapperForJSObject:object runtime:runtime];
+    COSLSymbol *symArgument = [objectWrapper symbol];
+    
     debug(@"objectWrapper: '%@' (%p) %p %d", objectWrapper, object, JSContextGetGlobalObject(ctx), JSValueGetType(ctx, object));
+    debug(@"propertyName: '%@'", propertyName);
+    
+    debug(@"symArgument: '%@'", symArgument);
     
     COSLSymbol *sym = [COSLBridgeParser symbolForName:propertyName];
+    if (symArgument) {
+        // Oh- we're probably calling something like NSFoo.new(). We should check and see if the symbol is a (class)method or property or whatever.
+        sym = [symArgument classMethodNamed:propertyName];
+    }
+    
     if (sym) {
         
-        if ([[sym symbolType] isEqualToString:@"function"]) {
+        if ([[sym symbolType] isEqualToString:@"function"] || [[sym symbolType] isEqualToString:@"method"]) {
             
             COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
             
@@ -309,7 +319,12 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         }
         else if ([[sym symbolType] isEqualToString:@"class"]) {
             
+            Class class = NSClassFromString(propertyName);
+            assert(class);
+            
             COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
+            [w setInstance:class];
+            
             debug(@"COSLJSWrapper class: '%@'", w);
             
             JSValueRef val = [runtime newJSValueForWrapper:w];

@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w;
 
+- (JSContextRef)contextRef;
+
 @end
 
 

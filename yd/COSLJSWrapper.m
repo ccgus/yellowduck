@@ -97,11 +97,11 @@
 }
     
 - (BOOL)isInstanceMethod {
-    return _instanceSelector != nil;
+    return [[_symbol symbolType] isEqualToString:@"method"];
 }
 
 - (BOOL)isClassMethod {
-    return _classSelector != nil;
+    return [[_symbol symbolType] isEqualToString:@"method"] && [_symbol isClassMethod];
 }
 
 - (BOOL)isSymbol {

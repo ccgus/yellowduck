@@ -135,10 +135,6 @@
     }
     
     
-    if ([sym name]) {
-        [_symbols setObject:sym forKey:[sym name]];
-    }
-    
     
     if (_currentFunction && [elementName isEqualToString:@"arg"]) {
         [_currentFunction addArgument:sym];
@@ -157,6 +153,12 @@
             [_currentClass addInstanceMethod:sym];
         }
     }
+    
+    
+    if ([sym name] && ([elementName isEqualToString:@"class"] || [elementName isEqualToString:@"function"] || [elementName isEqualToString:@"enum"])) {
+        [_symbols setObject:sym forKey:[sym name]];
+    }
+    
 }
 
 // sent when an end tag is encountered. The various parameters are supplied as above.
@@ -276,9 +278,42 @@
     Class c = NSClassFromString([self name]);
     assert(c); // We have to exist, right?
     
-    if ([c respondsToSelector:NSSelectorFromString(name)]) {
+    SEL selector = NSSelectorFromString(name);
+    
+    if ([c respondsToSelector:selector]) {
         debug(@"Found class method '%@' in the runtime", name);
+        
+        NSMethodSignature *methodSignature = [c methodSignatureForSelector:selector];
+        assert(methodSignature);
+        debug(@"methodSignature: '%@'", methodSignature);
+        
+        COSLSymbol *classMethodSymol = [COSLSymbol new];
+        [classMethodSymol setName:name];
+        [classMethodSymol setSymbolType:@"method"];
+        [classMethodSymol setIsClassMethod:YES];
+        
+        if ([methodSignature methodReturnType]) {
+            COSLSymbol *returnValue = [COSLSymbol new];
+            [returnValue setRuntimeType:[NSString stringWithFormat:@"%s", [methodSignature methodReturnType]]];
+            [classMethodSymol setReturnValue:returnValue];
+        }
+        
+        
+        for (NSUInteger idx = 2; idx < [methodSignature numberOfArguments]; idx++) {
+            
+            COSLSymbol *argument = [COSLSymbol new];
+            [argument setRuntimeType:[NSString stringWithFormat:@"%s", [methodSignature methodReturnType]]];
+            [[classMethodSymol arguments] addObject:argument];
+            debug(@"argument: '%@'", argument);
+        }
+        
+        [[self classMethods] addObject:classMethodSymol];
+        
+        assert([NSThread isMainThread]); // need to put things in a queue if we're doing this in a background thread.
+        
+        return classMethodSymol;
     }
+    
     
     
     

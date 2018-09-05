@@ -30,11 +30,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isClass;
 - (BOOL)isInstance;
-- (BOOL)isInstanceMethod;
-- (BOOL)isClassMethod;
 
 - (BOOL)isSymbol;
 - (BOOL)isFunction;
+- (BOOL)isInstanceMethod;
+- (BOOL)isClassMethod;
 
 - (BOOL)hasClassMethodNamed:(NSString*)m;
 
