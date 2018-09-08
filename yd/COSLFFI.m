@@ -16,7 +16,7 @@
 @property (weak) COSLJSWrapper *f;
 @property (weak) COSLJSWrapper *caller;
 @property (strong) NSArray *args;
-@property (weak) COSLRuntime *cos;
+@property (weak) COSLRuntime *runtime;
 @end
 
 @implementation COSLFFI
@@ -28,7 +28,7 @@
     [ffi setF:f];
     [ffi setCaller:caller];
     [ffi setArgs:args];
-    [ffi setCos:cos];
+    [ffi setRuntime:cos];
     
     return ffi;
 }
@@ -74,8 +74,8 @@
         const char * returnType = [methodSignature methodReturnType];
         JSValueRef returnValue = NULL;
         if (strcmp(returnType, @encode(void)) == 0) {
-            returnValue = JSValueMakeUndefined([_cos contextRef]);
-            returnWrapper = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)returnValue runtime:_cos];
+            returnValue = JSValueMakeUndefined([_runtime contextRef]);
+            returnWrapper = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)returnValue runtime:_runtime];
         }
         // id
         else if (strcmp(returnType, @encode(id)) == 0
@@ -85,7 +85,7 @@
             
             CFRetain((CFTypeRef)object);
             
-            returnWrapper = [COSLJSWrapper wrapperWithInstance:object runtime:_cos];
+            returnWrapper = [COSLJSWrapper wrapperWithInstance:object runtime:_runtime];
             
         }
         
@@ -118,7 +118,7 @@
 
     assert(callAddress);
     
-    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] runtime:_cos] : nil;
+    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
     
     BOOL objCCall = NO;
     

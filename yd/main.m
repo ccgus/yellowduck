@@ -17,25 +17,25 @@ int main(int argc, const char * argv[]) {
         
         [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:@"/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
         
-        COSLRuntime *cos = [COSLRuntime new];
+        COSLRuntime *runtime = [COSLRuntime new];
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        [cos evaluateScript:@"var c = COSLTestStuff.new(); COSLAssert(c != null);"];
+        [runtime evaluateScript:@"var c = COSLTestStuff.new(); COSLAssert(c != null);"];
         
-        [cos evaluateScript:@"print('Hello?');"];
-        [cos evaluateScript:@"print(COSLMethodReturnNSDictionary());"];
+        [runtime evaluateScript:@"print('Hello?');"];
+        [runtime evaluateScript:@"print(COSLMethodReturnNSDictionary());"];
         
         COSLTestStuffTestPassed = NO;
-        [cos evaluateScript:@"COSLMethodCheckNSDictionary(COSLMethodReturnNSDictionary());"];
+        [runtime evaluateScript:@"COSLMethodCheckNSDictionary(COSLMethodReturnNSDictionary());"];
         assert(COSLTestStuffTestPassed);
         
         COSLTestStuffTestPassed = NO;
-        [cos evaluateScript:@"print(COSLMethodStringSringArgStringReturn('Hello', 'World'))"];
+        [runtime evaluateScript:@"print(COSLMethodStringSringArgStringReturn('Hello', 'World'))"];
         assert(COSLTestStuffTestPassed);
         
         COSLTestStuffTestPassed = NO;
-        [cos evaluateScript:@"COSLMethodPleasePassNSNumber3(3);"];
+        [runtime evaluateScript:@"COSLMethodPleasePassNSNumber3(3);"];
         assert(COSLTestStuffTestPassed);
         
         
@@ -49,7 +49,7 @@ int main(int argc, const char * argv[]) {
         //[cos evaluateScript:@"var s = COScriptLite.testClassMethod();"];
         //[cos evaluateScript:@"s = null;"];
         
-        [cos garbageCollect];
+        [runtime garbageCollect];
         
         printf("All done\n");
         
