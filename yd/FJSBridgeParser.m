@@ -1,28 +1,28 @@
 //
-//  COSLBridgeParser.m
+//  FJSBridgeParser.m
 //  yd
 //
 //  Created by August Mueller on 8/21/18.
 //  Copyright © 2018 Flying Meat Inc. All rights reserved.
 //
 
-#import "COSLBridgeParser.h"
+#import "FJSBridgeParser.h"
 
 #define debug NSLog
 
-@interface COSLBridgeParser ()
+@interface FJSBridgeParser ()
 
-@property (strong) COSLSymbol *currentFunction;
-@property (strong) COSLSymbol *currentClass;
-@property (strong) COSLSymbol *currentMethod;
+@property (strong) FJSSymbol *currentFunction;
+@property (strong) FJSSymbol *currentClass;
+@property (strong) FJSSymbol *currentMethod;
 
 @end
 
-@implementation COSLBridgeParser
+@implementation FJSBridgeParser
 
 + (instancetype)sharedParser {
     
-    static COSLBridgeParser *bp = nil;
+    static FJSBridgeParser *bp = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         bp = [[self alloc] init];
@@ -41,7 +41,7 @@
     return self;
 }
 
-+ (COSLSymbol*)symbolForName:(NSString*)name {
++ (FJSSymbol*)symbolForName:(NSString*)name {
     return [[[self sharedParser] symbols] objectForKey:name];
 }
 
@@ -89,7 +89,7 @@
 - (void)parser:(NSXMLParser *)parser didStartElement:(NSString *)elementName namespaceURI:(nullable NSString *)namespaceURI qualifiedName:(nullable NSString *)qName attributes:(NSDictionary<NSString *, NSString *> *)attributeDict {
     
     
-    COSLSymbol *sym = [[COSLSymbol alloc] init];
+    FJSSymbol *sym = [[FJSSymbol alloc] init];
     [sym setSymbolType:elementName];
     [sym setName:[attributeDict objectForKey:@"name"]];
     
@@ -233,9 +233,9 @@
 
 
 
-@implementation COSLSymbol
+@implementation FJSSymbol
 
-- (void)addArgument:(COSLSymbol*)sym {
+- (void)addArgument:(FJSSymbol*)sym {
     if (!_arguments) {
         _arguments = [NSMutableArray array];
     }
@@ -243,7 +243,7 @@
     [_arguments addObject:sym];
 }
 
-- (void)addClassMethod:(COSLSymbol*)sym {
+- (void)addClassMethod:(FJSSymbol*)sym {
     if (!_classMethods) {
         _classMethods = [NSMutableArray array];
     }
@@ -251,7 +251,7 @@
     [_classMethods addObject:sym];
 }
 
-- (void)addInstanceMethod:(COSLSymbol*)sym {
+- (void)addInstanceMethod:(FJSSymbol*)sym {
     if (!_instanceMethods) {
         _instanceMethods = [NSMutableArray array];
     }
@@ -263,11 +263,11 @@
     return [NSString stringWithFormat:@"<%@: %p %@ %@>", NSStringFromClass([self class]), self, _name, _runtimeType];
 }
 
-- (COSLSymbol*)classMethodNamed:(NSString*)name {
+- (FJSSymbol*)classMethodNamed:(NSString*)name {
     
     assert([[self symbolType] isEqualToString:@"class"]);
     
-    for (COSLSymbol *sym in _classMethods) {
+    for (FJSSymbol *sym in _classMethods) {
         if ([[sym name] isEqualToString:name]) {
             return sym;
         }
@@ -287,13 +287,13 @@
         assert(methodSignature);
         debug(@"methodSignature: '%@'", methodSignature);
         
-        COSLSymbol *classMethodSymol = [COSLSymbol new];
+        FJSSymbol *classMethodSymol = [FJSSymbol new];
         [classMethodSymol setName:name];
         [classMethodSymol setSymbolType:@"method"];
         [classMethodSymol setIsClassMethod:YES];
         
         if ([methodSignature methodReturnType]) {
-            COSLSymbol *returnValue = [COSLSymbol new];
+            FJSSymbol *returnValue = [FJSSymbol new];
             [returnValue setRuntimeType:[NSString stringWithFormat:@"%s", [methodSignature methodReturnType]]];
             [classMethodSymol setReturnValue:returnValue];
         }
@@ -301,7 +301,7 @@
         
         for (NSUInteger idx = 2; idx < [methodSignature numberOfArguments]; idx++) {
             
-            COSLSymbol *argument = [COSLSymbol new];
+            FJSSymbol *argument = [FJSSymbol new];
             [argument setRuntimeType:[NSString stringWithFormat:@"%s", [methodSignature methodReturnType]]];
             [[classMethodSymol arguments] addObject:argument];
             debug(@"argument: '%@'", argument);
@@ -321,8 +321,8 @@
     return nil;
 }
 
-- (COSLSymbol*)instanceMethodNamed:(NSString*)name {
-    for (COSLSymbol *sym in _instanceMethods) {
+- (FJSSymbol*)instanceMethodNamed:(NSString*)name {
+    for (FJSSymbol *sym in _instanceMethods) {
         if ([[sym name] isEqualToString:name]) {
             return sym;
         }

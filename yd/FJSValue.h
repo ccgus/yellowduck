@@ -1,5 +1,5 @@
 //
-//  COSLJSWrapper.h
+//  FJSJSWrapper.h
 //  yd
 //
 //  Created by August Mueller on 8/21/18.
@@ -9,20 +9,20 @@
 #import <Foundation/Foundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
 #import <ffi/ffi.h>
-#import "COSLBridgeParser.h"
-#import "COSLRuntime.h"
+#import "FJSBridgeParser.h"
+#import "FJSRuntime.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface COSLJSWrapper : NSObject
+@interface FJSValue : NSObject
 
 @property (assign) BOOL isJSNative;
-@property (strong) COSLSymbol *symbol;
+@property (strong) FJSSymbol *symbol;
 @property (strong) id instance;
 
-+ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(COSLRuntime*)runtime;
-+ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym runtime:(COSLRuntime*)runtime;
-+ (instancetype)wrapperWithInstance:(id)instance runtime:(COSLRuntime*)runtime;
++ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(FJSRuntime*)runtime;
++ (instancetype)wrapperWithSymbol:(FJSSymbol*)sym runtime:(FJSRuntime*)runtime;
++ (instancetype)wrapperWithInstance:(id)instance runtime:(FJSRuntime*)runtime;
 
 + (instancetype)wrapperWithClass:(Class)c;
 + (instancetype)wrapperWithInstanceMethod:(SEL)selector;

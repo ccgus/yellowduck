@@ -1,5 +1,5 @@
 //
-//  COScript.m
+//  FJSRuntime.m
 //  yd
 //
 //  Created by August Mueller on 8/20/18.
@@ -9,54 +9,53 @@
 // https://brandonevans.ca/post/text/dynamically-exporting-objective-c-classes-to/
 //
 
-#import "COSLRuntime.h"
-#import "COSLJSWrapper.h"
-#import "COSLJSWrapper.h"
-#import "COSLBridgeParser.h"
-#import "COSLFFI.h"
+#import "FJSRuntime.h"
+#import "FJSValue.h"
+#import "FJSBridgeParser.h"
+#import "FJSFFI.h"
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
-@interface COSLRuntime () {
+@interface FJSRuntime () {
     
 }
 
 
-@property (weak) COSLRuntime *previousCoScript;
+@property (weak) FJSRuntime *previousCoScript;
 
 @end
 
-#define COSLRuntimeLookupKey @"__cosRuntimeLookup__"
+#define FJSRuntimeLookupKey @"__cosRuntimeLookup__"
 
-static COSLRuntime *COSLCurrentCOScriptLite;
+static FJSRuntime *FJSCurrentCOScriptLite;
 
-static JSClassRef COSLGlobalClass = NULL;
-static void COSL_initialize(JSContextRef ctx, JSObjectRef object);
-static void COSL_finalize(JSObjectRef object);
-JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception);
-static bool COSL_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
-static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception);
+static JSClassRef FJSGlobalClass = NULL;
+static void FJS_initialize(JSContextRef ctx, JSObjectRef object);
+static void FJS_finalize(JSObjectRef object);
+JSValueRef FJS_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception);
+static bool FJS_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
+static JSValueRef FJS_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception);
 
-@implementation COSLRuntime
+@implementation FJSRuntime
 
 
 + (void)initialize {
-    if (self == [COSLRuntime class]) {
+    if (self == [FJSRuntime class]) {
         JSClassDefinition COSGlobalClassDefinition      = kJSClassDefinitionEmpty;
         COSGlobalClassDefinition.className              = "CocoaScriptLite";
-        COSGlobalClassDefinition.getProperty            = COSL_getGlobalProperty;
-        COSGlobalClassDefinition.initialize             = COSL_initialize;
-        COSGlobalClassDefinition.finalize               = COSL_finalize;
-        //COSGlobalClassDefinition.hasProperty            = COSL_hasProperty; // If we don't have this, getProperty gets called twice.
-        COSGlobalClassDefinition.callAsFunction         = COSL_callAsFunction;
-        COSLGlobalClass                                 = JSClassCreate(&COSGlobalClassDefinition);
+        COSGlobalClassDefinition.getProperty            = FJS_getGlobalProperty;
+        COSGlobalClassDefinition.initialize             = FJS_initialize;
+        COSGlobalClassDefinition.finalize               = FJS_finalize;
+        //COSGlobalClassDefinition.hasProperty            = FJS_hasProperty; // If we don't have this, getProperty gets called twice.
+        COSGlobalClassDefinition.callAsFunction         = FJS_callAsFunction;
+        FJSGlobalClass                                 = JSClassCreate(&COSGlobalClassDefinition);
 
     }
 }
 
 
-+ (COSLRuntime*)currentCOScriptLite {
-    return COSLCurrentCOScriptLite;
++ (FJSRuntime*)currentCOScriptLite {
+    return FJSCurrentCOScriptLite;
 }
 
 + (instancetype)runtimeInContext:(JSContextRef)context {
@@ -64,12 +63,12 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 //    JSContext *ctx = [JSContext contextWithJSGlobalContextRef:context];
 //    debug(@"ctx: '%@'", ctx);
 //
-//    return [[ctx objectForKeyedSubscript:COSLRuntimeLookupKey] toObject];
+//    return [[ctx objectForKeyedSubscript:FJSRuntimeLookupKey] toObject];
 //
     
     JSValueRef exception = NULL;
     
-    JSStringRef jsName = JSStringCreateWithUTF8CString([COSLRuntimeLookupKey UTF8String]);
+    JSStringRef jsName = JSStringCreateWithUTF8CString([FJSRuntimeLookupKey UTF8String]);
     JSValueRef jsValue = JSObjectGetProperty(context, JSContextGetGlobalObject(context), jsName, &exception);
     JSStringRelease(jsName);
     
@@ -78,7 +77,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         return NULL;
     }
     
-    COSLJSWrapper *w = (__bridge COSLJSWrapper *)JSObjectGetPrivate((JSObjectRef)jsValue);
+    FJSValue *w = (__bridge FJSValue *)JSObjectGetPrivate((JSObjectRef)jsValue);
     
     return [w instance];
 }
@@ -97,28 +96,28 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 
 
-- (void)pushAsCurrentCOSL {
-    [self setPreviousCoScript:COSLCurrentCOScriptLite];
-    COSLCurrentCOScriptLite = self;
+- (void)pushAsCurrentFJS {
+    [self setPreviousCoScript:FJSCurrentCOScriptLite];
+    FJSCurrentCOScriptLite = self;
 }
 
-- (void)popAsCurrentCOSL {
-    COSLCurrentCOScriptLite = [self previousCoScript];
+- (void)popAsCurrentFJS {
+    FJSCurrentCOScriptLite = [self previousCoScript];
 }
 
 - (JSContext*)context {
     if (!_jscContext) {
-        JSGlobalContextRef globalContext = JSGlobalContextCreate(COSLGlobalClass);
+        JSGlobalContextRef globalContext = JSGlobalContextCreate(FJSGlobalClass);
         _jscContext = [JSContext contextWithJSGlobalContextRef:globalContext];
         
         [_jscContext setExceptionHandler:^(JSContext *context, JSValue *exception) {
             debug(@"Exception: %@", exception);
         }];
         
-        [self setRuntimeObject:self withName:COSLRuntimeLookupKey];
+        [self setRuntimeObject:self withName:FJSRuntimeLookupKey];
         
-        FMAssert([self runtimeObjectWithName:COSLRuntimeLookupKey] == self);
-        FMAssert([COSLRuntime runtimeInContext:[self contextRef]]  == self);
+        FMAssert([self runtimeObjectWithName:FJSRuntimeLookupKey] == self);
+        FMAssert([FJSRuntime runtimeInContext:[self contextRef]]  == self);
         
     }
     
@@ -142,14 +141,14 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         return NULL;
     }
     
-    COSLJSWrapper *w = (__bridge COSLJSWrapper *)JSObjectGetPrivate((JSObjectRef)jsValue);
+    FJSValue *w = (__bridge FJSValue *)JSObjectGetPrivate((JSObjectRef)jsValue);
     
     return [w instance];
 }
 
 - (JSValueRef)setRuntimeObject:(id)object withName:(NSString *)name {
     
-    COSLJSWrapper *w = [COSLJSWrapper wrapperWithInstance:object runtime:self];
+    FJSValue *w = [FJSValue wrapperWithInstance:object runtime:self];
     
     JSValueRef jsValue = [self newJSValueForWrapper:w];
     
@@ -173,7 +172,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 - (id)evaluateScript:(NSString *)script withSourceURL:(NSURL *)sourceURL {
     
-    [self pushAsCurrentCOSL];
+    [self pushAsCurrentFJS];
     
     @try {
         [[self context] evaluateScript:script withSourceURL:sourceURL];
@@ -185,12 +184,12 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         ;
     }
     
-    [self popAsCurrentCOSL];
+    [self popAsCurrentFJS];
 }
 
 - (id)evaluateScript:(NSString*)script {
     
-    [self pushAsCurrentCOSL];
+    [self pushAsCurrentFJS];
     
     @try {
         [[self context] evaluateScript:script];
@@ -202,7 +201,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
         ;
     }
     
-    [self popAsCurrentCOSL];
+    [self popAsCurrentFJS];
     
     return nil;
 }
@@ -236,7 +235,7 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
     NSString *bridgeXML = [path stringByAppendingPathComponent:[NSString stringWithFormat:@"Resources/BridgeSupport/%@.bridgesupport", frameworkName]];
     if ([[NSFileManager defaultManager] fileExistsAtPath:bridgeXML]) {
-        [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:bridgeXML];
+        [[FJSBridgeParser sharedParser] parseBridgeFileAtPath:bridgeXML];
     }
 }
 
@@ -244,12 +243,12 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
     debug(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
-- (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w {
+- (JSValueRef)newJSValueForWrapper:(FJSValue*)w {
     
     // This should only be called for non-js objects.
     FMAssert(![w isJSNative]);
     
-    JSObjectRef r = JSObjectMake([[self jscContext] JSGlobalContextRef], COSLGlobalClass, (__bridge void *)(w));
+    JSObjectRef r = JSObjectMake([[self jscContext] JSGlobalContextRef], FJSGlobalClass, (__bridge void *)(w));
     CFRetain((__bridge void *)w);
     
     return r;
@@ -257,9 +256,9 @@ static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, 
 
 @end
 
-static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
+static void FJS_initialize(JSContextRef ctx, JSObjectRef object) {
     
-    //debug(@"COSL_initialize: %@", [COSLJSWrapper wrapperForJSObject:object cos:[COScriptLite currentCOScriptLite]]);
+    //debug(@"FJS_initialize: %@", [FJSJSWrapper wrapperForJSObject:object cos:[COScriptLite currentCOScriptLite]]);
     
     
 //    debug(@"%s:%d", __FUNCTION__, __LINE__);
@@ -279,31 +278,31 @@ static void COSL_initialize(JSContextRef ctx, JSObjectRef object) {
 
 }
 
-JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception) {
+JSValueRef FJS_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception) {
     NSString *propertyName = (NSString *)CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, propertyNameJS));
-    if ([propertyName isEqualToString:COSLRuntimeLookupKey]) {
+    if ([propertyName isEqualToString:FJSRuntimeLookupKey]) {
         return nil;
     }
     
-    COSLRuntime *runtime = [COSLRuntime runtimeInContext:ctx];
+    FJSRuntime *runtime = [FJSRuntime runtimeInContext:ctx];
     
     //debug(@"propertyName: '%@' (%p)", propertyName, object);
     
     if ([propertyName isEqualToString:@"toString"] || [propertyName isEqualToString:@"Symbol.toStringTag"]/* || [propertyName isEqualToString:@"Symbol.toPrimitive"]*/) {
-        COSLJSWrapper *w = [COSLJSWrapper wrapperForJSObject:object runtime:runtime];
+        FJSValue *w = [FJSValue wrapperForJSObject:object runtime:runtime];
         
         return [w toJSString];
     }
     
-    COSLJSWrapper *objectWrapper = [COSLJSWrapper wrapperForJSObject:object runtime:runtime];
-    COSLSymbol *symArgument = [objectWrapper symbol];
+    FJSValue *objectWrapper = [FJSValue wrapperForJSObject:object runtime:runtime];
+    FJSSymbol *symArgument = [objectWrapper symbol];
     
     debug(@"objectWrapper: '%@' (%p) %p %d", objectWrapper, object, JSContextGetGlobalObject(ctx), JSValueGetType(ctx, object));
     debug(@"propertyName: '%@'", propertyName);
     
     debug(@"symArgument: '%@'", symArgument);
     
-    COSLSymbol *sym = [COSLBridgeParser symbolForName:propertyName];
+    FJSSymbol *sym = [FJSBridgeParser symbolForName:propertyName];
     if (symArgument) {
         // Oh- we're probably calling something like NSFoo.new(). We should check and see if the symbol is a (class)method or property or whatever.
         sym = [symArgument classMethodNamed:propertyName];
@@ -313,7 +312,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
         
         if ([[sym symbolType] isEqualToString:@"function"] || [[sym symbolType] isEqualToString:@"method"]) {
             
-            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
+            FJSValue *w = [FJSValue wrapperWithSymbol:sym runtime:runtime];
             
             return [runtime newJSValueForWrapper:w];
         }
@@ -322,10 +321,10 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             Class class = NSClassFromString(propertyName);
             assert(class);
             
-            COSLJSWrapper *w = [COSLJSWrapper wrapperWithSymbol:sym runtime:runtime];
+            FJSValue *w = [FJSValue wrapperWithSymbol:sym runtime:runtime];
             [w setInstance:class];
             
-            debug(@"COSLJSWrapper class: '%@'", w);
+            debug(@"FJSJSWrapper class: '%@'", w);
             
             JSValueRef val = [runtime newJSValueForWrapper:w];
             
@@ -345,9 +344,9 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             assert([[sym runtimeType] hasPrefix:@"@"]);
             
             id o = (__bridge id)(*(void**)dlsymbol);
-            COSLJSWrapper *w = [COSLJSWrapper wrapperWithInstance:o runtime:runtime];
+            FJSValue *w = [FJSValue wrapperWithInstance:o runtime:runtime];
             
-            JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(w));
+            JSObjectRef r = JSObjectMake(ctx, FJSGlobalClass, (__bridge void *)(w));
             
             CFRetain((__bridge void *)w);
             
@@ -363,7 +362,7 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
             // Look up a method on it I guess?
             debug(@"looking up a method or property on %@", [[objectWrapper symbol] name]);
             
-            COSLSymbol *classMethod = [[objectWrapper symbol] classMethodNamed:propertyName];
+            FJSSymbol *classMethod = [[objectWrapper symbol] classMethodNamed:propertyName];
             debug(@"classMethod: '%@'", classMethod);
             
         }
@@ -382,9 +381,9 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //    Class objCClass = NSClassFromString(propertyName);
 //    if (objCClass && ![propertyName isEqualToString:@"Object"] && ![propertyName isEqualToString:@"Function"]) {
 //
-//        COSLJSWrapper *w = [COSLJSWrapper wrapperWithClass:objCClass];
+//        FJSJSWrapper *w = [FJSJSWrapper wrapperWithClass:objCClass];
 //
-//        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
+//        JSObjectRef r = JSObjectMake(ctx, FJSGlobalClass, (__bridge void *)(runtime));
 //
 //        JSObjectSetPrivate(r, (__bridge void *)(w));
 //
@@ -397,9 +396,9 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
 //        debug(@"class lookup of something…");
 //
 //
-//        COSLJSWrapper *w = [existingWrap wrapperForClassMethodNamed:propertyName];
+//        FJSJSWrapper *w = [existingWrap wrapperForClassMethodNamed:propertyName];
 //
-//        JSObjectRef r = JSObjectMake(ctx, COSLGlobalClass, (__bridge void *)(runtime));
+//        JSObjectRef r = JSObjectMake(ctx, FJSGlobalClass, (__bridge void *)(runtime));
 //
 //        JSObjectSetPrivate(r, (__bridge void *)(w));
 //
@@ -417,39 +416,39 @@ JSValueRef COSL_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSString
     return nil;
 }
 
-//static bool COSL_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS) {
+//static bool FJS_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS) {
 //    NSString *propertyName = (NSString *)CFBridgingRelease(JSStringCopyCFString(NULL, propertyNameJS));
 //    debug(@"propertyName: '%@'", propertyName);
 //    debug(@"%s:%d", __FUNCTION__, __LINE__);
 //    return NO;
 //}
 
-static JSValueRef COSL_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
+static JSValueRef FJS_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception) {
     
-    COSLRuntime *runtime = [COSLRuntime runtimeInContext:ctx];
+    FJSRuntime *runtime = [FJSRuntime runtimeInContext:ctx];
     
-    COSLJSWrapper *objectToCall = [COSLJSWrapper wrapperForJSObject:thisObject runtime:runtime];
-    COSLJSWrapper *functionToCall = [COSLJSWrapper wrapperForJSObject:functionJS runtime:runtime];
+    FJSValue *objectToCall = [FJSValue wrapperForJSObject:thisObject runtime:runtime];
+    FJSValue *functionToCall = [FJSValue wrapperForJSObject:functionJS runtime:runtime];
     
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:argumentCount];
     for (size_t idx = 0; idx < argumentCount; idx++) {
-        COSLJSWrapper *arg = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)arguments[idx] runtime:runtime];
+        FJSValue *arg = [FJSValue wrapperForJSObject:(JSObjectRef)arguments[idx] runtime:runtime];
         assert(arg);
         [args addObject:arg];
     }
     
-    COSLFFI *ffi = [COSLFFI ffiWithFunction:functionToCall caller:objectToCall arguments:args cos:runtime];
+    FJSFFI *ffi = [FJSFFI ffiWithFunction:functionToCall caller:objectToCall arguments:args cos:runtime];
     
     
-    COSLJSWrapper *ret = [ffi callFunction];
+    FJSValue *ret = [ffi callFunction];
     
     JSValueRef returnRef = [ret JSValue];
     
     return returnRef;
 }
 
-static void COSL_finalize(JSObjectRef object) {
-    COSLJSWrapper *objectToCall = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(object));
+static void FJS_finalize(JSObjectRef object) {
+    FJSValue *objectToCall = (__bridge FJSValue *)(JSObjectGetPrivate(object));
     
     if (objectToCall) {
         CFRelease((__bridge CFTypeRef)(objectToCall));
@@ -464,13 +463,13 @@ void print(id s) {
     printf("** %s\n", [[s description] UTF8String]);
 }
 
-void COSLAssert(BOOL b) {
+void FJSAssert(BOOL b) {
     FMAssert(b);
 }
 
 /*
  
-void COSL_exportClassJSExport(Class class) {
+void FJS_exportClassJSExport(Class class) {
     // Create a protocol that inherits from JSExport and with all the public methods and properties of the class
  
     NSString *protocolName = [NSString stringWithFormat:@"%sJavaScriptMethods", class_getName(class)];
@@ -546,7 +545,7 @@ void COSL_exportClassJSExport(Class class) {
  
 //    Class superclass = class_getSuperclass(class);
 //    if (superclass) {
-//        COSL_exportClassJSExport(superclass);
+//        FJS_exportClassJSExport(superclass);
 //    }
 }*/
 

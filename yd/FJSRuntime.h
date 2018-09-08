@@ -1,5 +1,5 @@
 //
-//  COScriptLite.h
+//  FJSRuntime.h
 //  yd
 //
 //  Created by August Mueller on 8/20/18.
@@ -13,7 +13,7 @@
 
 @import JavaScriptCore;
 
-@class COSLJSWrapper;
+@class FJSValue;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface COSLRuntime : NSObject <COScriptLiteJavaScriptMethods>
+@interface FJSRuntime : NSObject <COScriptLiteJavaScriptMethods>
 
 @property (strong) JSContext *jscContext;
 
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)garbageCollect;
 
-- (JSValueRef)newJSValueForWrapper:(COSLJSWrapper*)w;
+- (JSValueRef)newJSValueForWrapper:(FJSValue*)w;
 
 - (JSContextRef)contextRef;
 

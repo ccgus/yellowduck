@@ -1,19 +1,19 @@
 //
-//  COSLJSWrapper.m
+//  FJSJSWrapper.m
 //  yd
 //
 //  Created by August Mueller on 8/21/18.
 //  Copyright © 2018 Flying Meat Inc. All rights reserved.
 //
 
-#import "COSLJSWrapper.h"
-#import "COSLFFI.h"
+#import "FJSValue.h"
+#import "FJSFFI.h"
 
 #define debug NSLog
 
-@interface COSLJSWrapper ()
+@interface FJSValue ()
 
-@property (weak) COSLRuntime *runtime;
+@property (weak) FJSRuntime *runtime;
 @property (assign) Class class;
 @property (assign) SEL instanceSelector;
 @property (assign) SEL classSelector;
@@ -21,27 +21,27 @@
 
 @end
 
-@implementation COSLJSWrapper
+@implementation FJSValue
 
 - (void)dealloc {
     //NSLog(@"%s:%d", __FUNCTION__, __LINE__);
 }
 
 
-+ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(COSLRuntime*)runtime {
++ (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(FJSRuntime*)runtime {
     
     if (!jso) {
         return nil;
     }
     
     if (JSValueIsObject([[runtime jscContext] JSGlobalContextRef], jso)) {
-        COSLJSWrapper *wr = (__bridge COSLJSWrapper *)(JSObjectGetPrivate(jso));
+        FJSValue *wr = (__bridge FJSValue *)(JSObjectGetPrivate(jso));
         if (wr) {
             return wr;
         }
     }
     
-    COSLJSWrapper *native = [COSLJSWrapper new];
+    FJSValue *native = [FJSValue new];
     [native setNativeJSObj:jso];
     [native setIsJSNative:YES];
     [native setRuntime:runtime];
@@ -49,9 +49,9 @@
     return native;
 }
 
-+ (instancetype)wrapperWithSymbol:(COSLSymbol*)sym runtime:(COSLRuntime*)runtime {
++ (instancetype)wrapperWithSymbol:(FJSSymbol*)sym runtime:(FJSRuntime*)runtime {
     
-    COSLJSWrapper *cw = [[self alloc] init];
+    FJSValue *cw = [[self alloc] init];
     [cw setSymbol:sym];
     [cw setRuntime:runtime];
     
@@ -59,14 +59,14 @@
 }
 
 + (instancetype)wrapperWithClass:(Class)c {
-    COSLJSWrapper *cw = [[self alloc] init];
+    FJSValue *cw = [[self alloc] init];
     [cw setClass:c];
     
     return cw;
 }
 
-+ (instancetype)wrapperWithInstance:(id)instance runtime:(COSLRuntime*)runtime {
-    COSLJSWrapper *cw = [[self alloc] init];
++ (instancetype)wrapperWithInstance:(id)instance runtime:(FJSRuntime*)runtime {
+    FJSValue *cw = [[self alloc] init];
     [cw setInstance:instance];
     
     return cw;
@@ -74,14 +74,14 @@
 }
 
 + (instancetype)wrapperWithInstanceMethod:(SEL)selector {
-    COSLJSWrapper *cw = [[self alloc] init];
+    FJSValue *cw = [[self alloc] init];
     [cw setInstanceSelector:selector];
     
     return cw;
 }
 
 + (instancetype)wrapperWithClassMethod:(SEL)selector {
-    COSLJSWrapper *cw = [[self alloc] init];
+    FJSValue *cw = [[self alloc] init];
     [cw setClassSelector:selector];
     
     return cw;
@@ -120,7 +120,7 @@
     
     assert(_class);
     
-    COSLJSWrapper *w = [COSLJSWrapper new];
+    FJSValue *w = [FJSValue new];
     [w setClassSelector:NSSelectorFromString(m)];
     [w setClass:_class];
     
@@ -140,7 +140,7 @@
     
     if (_instance) {
         
-        JSValueRef vr = [COSLJSWrapper nativeObjectToJSValue:_instance inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
+        JSValueRef vr = [FJSValue nativeObjectToJSValue:_instance inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
         
         if (vr) {
             return vr;
@@ -163,7 +163,7 @@
         char c = [[_symbol runtimeType] characterAtIndex:0];
         
         if (c) {
-            return [COSLFFI ffiTypeAddressForTypeEncoding:c];
+            return [FJSFFI ffiTypeAddressForTypeEncoding:c];
         }
     }
     
@@ -182,7 +182,7 @@
 
 - (BOOL)pushJSValueToNativeType:(NSString*)type {
     
-    _instance = [COSLJSWrapper nativeObjectFromJSValue:_nativeJSObj inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
+    _instance = [FJSValue nativeObjectFromJSValue:_nativeJSObj inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
     
     
     return _instance != nil;

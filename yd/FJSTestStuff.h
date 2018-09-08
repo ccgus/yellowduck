@@ -1,5 +1,5 @@
 //
-//  COSLTestStuff.h
+//  FJSTestStuff.h
 //  yd
 //
 //  Created by August Mueller on 8/26/18.
@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-extern BOOL COSLTestStuffTestPassed;
+extern BOOL FJSTestStuffTestPassed;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface COSLTestStuff : NSObject
+@interface FJSTestStuff : NSObject
 
 @end
 

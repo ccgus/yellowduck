@@ -1,30 +1,30 @@
 //
-//  COSLFFI.m
+//  FJSFFI.m
 //  yd
 //
 //  Created by August Mueller on 8/22/18.
 //  Copyright © 2018 Flying Meat Inc. All rights reserved.
 //
 
-#import "COSLFFI.h"
-#import "COSLJSWrapper.h"
-#import "COSLRuntime.h"
+#import "FJSFFI.h"
+#import "FJSValue.h"
+#import "FJSRuntime.h"
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
-@interface COSLFFI ()
-@property (weak) COSLJSWrapper *f;
-@property (weak) COSLJSWrapper *caller;
+@interface FJSFFI ()
+@property (weak) FJSValue *f;
+@property (weak) FJSValue *caller;
 @property (strong) NSArray *args;
-@property (weak) COSLRuntime *runtime;
+@property (weak) FJSRuntime *runtime;
 @end
 
-@implementation COSLFFI
+@implementation FJSFFI
 
 
-+ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COSLRuntime*)cos {
++ (instancetype)ffiWithFunction:(FJSValue*)f caller:(nullable FJSValue*)caller arguments:(NSArray*)args cos:(FJSRuntime*)cos {
     
-    COSLFFI *ffi = [COSLFFI new];
+    FJSFFI *ffi = [FJSFFI new];
     [ffi setF:f];
     [ffi setCaller:caller];
     [ffi setArgs:args];
@@ -33,12 +33,12 @@
     return ffi;
 }
 
-- (nullable COSLJSWrapper*)objcInvoke {
+- (nullable FJSValue*)objcInvoke {
     assert([_caller instance]);
-    COSLSymbol *functionSymbol = [_f symbol];
+    FJSSymbol *functionSymbol = [_f symbol];
     assert(functionSymbol);
     NSString *methodName = [functionSymbol name];
-    COSLJSWrapper *returnWrapper = nil;
+    FJSValue *returnWrapper = nil;
     
     @try {
         
@@ -75,7 +75,7 @@
         JSValueRef returnValue = NULL;
         if (strcmp(returnType, @encode(void)) == 0) {
             returnValue = JSValueMakeUndefined([_runtime contextRef]);
-            returnWrapper = [COSLJSWrapper wrapperForJSObject:(JSObjectRef)returnValue runtime:_runtime];
+            returnWrapper = [FJSValue wrapperForJSObject:(JSObjectRef)returnValue runtime:_runtime];
         }
         // id
         else if (strcmp(returnType, @encode(id)) == 0
@@ -85,7 +85,7 @@
             
             CFRetain((CFTypeRef)object);
             
-            returnWrapper = [COSLJSWrapper wrapperWithInstance:object runtime:_runtime];
+            returnWrapper = [FJSValue wrapperWithInstance:object runtime:_runtime];
             
         }
         
@@ -100,7 +100,7 @@
 }
 
 
-- (nullable COSLJSWrapper*)callFunction {
+- (nullable FJSValue*)callFunction {
     
     assert(_f);
     assert([_f isFunction] || [_f isClassMethod] || [_f isInstanceMethod]);
@@ -109,7 +109,7 @@
         return [self objcInvoke];
     }
     
-    COSLSymbol *functionSymbol = [_f symbol];
+    FJSSymbol *functionSymbol = [_f symbol];
     assert(functionSymbol);
     
     NSString *functionName = [functionSymbol name];
@@ -118,7 +118,7 @@
 
     assert(callAddress);
     
-    COSLJSWrapper *returnWrapper = [functionSymbol returnValue] ? [COSLJSWrapper wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
+    FJSValue *returnWrapper = [functionSymbol returnValue] ? [FJSValue wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
     
     BOOL objCCall = NO;
     
@@ -139,8 +139,8 @@
         
         
         for (NSInteger idx = 0; idx < [_args count]; idx++) {
-            COSLJSWrapper *arg = [_args objectAtIndex:idx];
-            COSLSymbol *argSym = [[[_f symbol] arguments] objectAtIndex:idx];
+            FJSValue *arg = [_args objectAtIndex:idx];
+            FJSSymbol *argSym = [[[_f symbol] arguments] objectAtIndex:idx];
             
             assert(argSym);
             

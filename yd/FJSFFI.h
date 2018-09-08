@@ -1,5 +1,5 @@
 //
-//  COSLFFI.h
+//  FJSFFI.h
 //  yd
 //
 //  Created by August Mueller on 8/22/18.
@@ -9,16 +9,16 @@
 #import <Foundation/Foundation.h>
 #import <ffi/ffi.h>
 
-@class COSLJSWrapper;
-@class COSLRuntime;
+@class FJSValue;
+@class FJSRuntime;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface COSLFFI : NSObject
+@interface FJSFFI : NSObject
 
-+ (instancetype)ffiWithFunction:(COSLJSWrapper*)f caller:(nullable COSLJSWrapper*)caller arguments:(NSArray*)args cos:(COSLRuntime*)cos;
++ (instancetype)ffiWithFunction:(FJSValue*)f caller:(nullable FJSValue*)caller arguments:(NSArray*)args cos:(FJSRuntime*)cos;
 
-- (nullable COSLJSWrapper*)callFunction;
+- (nullable FJSValue*)callFunction;
 
 + (ffi_type *)ffiTypeAddressForTypeEncoding:(char)encoding;
 

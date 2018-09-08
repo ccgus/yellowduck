@@ -7,36 +7,36 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "COSLRuntime.h"
-#import "COSLBridgeParser.h"
-#import "COSLTestStuff.h"
+#import "FJSRuntime.h"
+#import "FJSBridgeParser.h"
+#import "FJSTestStuff.h"
 #import <objc/runtime.h>
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         
-        [[COSLBridgeParser sharedParser] parseBridgeFileAtPath:@"/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
+        [[FJSBridgeParser sharedParser] parseBridgeFileAtPath:@"/Users/gus/Projects/yellowduck/bridgesupport/yd.bridgesupport"];
         
-        COSLRuntime *runtime = [COSLRuntime new];
+        FJSRuntime *runtime = [FJSRuntime new];
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        [runtime evaluateScript:@"var c = COSLTestStuff.new(); COSLAssert(c != null);"];
+        [runtime evaluateScript:@"var c = FJSTestStuff.new(); FJSAssert(c != null);"];
         
         [runtime evaluateScript:@"print('Hello?');"];
-        [runtime evaluateScript:@"print(COSLMethodReturnNSDictionary());"];
+        [runtime evaluateScript:@"print(FJSMethodReturnNSDictionary());"];
         
-        COSLTestStuffTestPassed = NO;
-        [runtime evaluateScript:@"COSLMethodCheckNSDictionary(COSLMethodReturnNSDictionary());"];
-        assert(COSLTestStuffTestPassed);
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodCheckNSDictionary(FJSMethodReturnNSDictionary());"];
+        assert(FJSTestStuffTestPassed);
         
-        COSLTestStuffTestPassed = NO;
-        [runtime evaluateScript:@"print(COSLMethodStringSringArgStringReturn('Hello', 'World'))"];
-        assert(COSLTestStuffTestPassed);
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"print(FJSMethodStringSringArgStringReturn('Hello', 'World'))"];
+        assert(FJSTestStuffTestPassed);
         
-        COSLTestStuffTestPassed = NO;
-        [runtime evaluateScript:@"COSLMethodPleasePassNSNumber3(3);"];
-        assert(COSLTestStuffTestPassed);
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassNSNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
         
         
         

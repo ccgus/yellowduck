@@ -1,5 +1,5 @@
 //
-//  COSLBridgeParser.h
+//  FJSBridgeParser.h
 //  yd
 //
 //  Created by August Mueller on 8/21/18.
@@ -10,9 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class COSLSymbol;
+@class FJSSymbol;
 
-@interface COSLBridgeParser : NSObject <NSXMLParserDelegate>
+@interface FJSBridgeParser : NSObject <NSXMLParserDelegate>
 
 @property (strong) NSMutableDictionary *symbols;
 
@@ -20,12 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)parseBridgeFileAtPath:(NSString*)bridgePath;
 
-+ (COSLSymbol*)symbolForName:(NSString*)name;
++ (FJSSymbol*)symbolForName:(NSString*)name;
 
 @end
 
 
-@interface COSLSymbol : NSObject {
+@interface FJSSymbol : NSObject {
     
 }
 
@@ -37,16 +37,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong) NSMutableArray *arguments;
 @property (strong) NSMutableArray *classMethods;
 @property (strong) NSMutableArray *instanceMethods;
-@property (strong) COSLSymbol *returnValue;
+@property (strong) FJSSymbol *returnValue;
 @property (assign) BOOL isClassMethod;
 
-- (void)addArgument:(COSLSymbol*)sym;
+- (void)addArgument:(FJSSymbol*)sym;
 
-- (void)addClassMethod:(COSLSymbol*)sym;
-- (void)addInstanceMethod:(COSLSymbol*)sym;
+- (void)addClassMethod:(FJSSymbol*)sym;
+- (void)addInstanceMethod:(FJSSymbol*)sym;
 
-- (COSLSymbol*)classMethodNamed:(NSString*)name;
-- (COSLSymbol*)instanceMethodNamed:(NSString*)name;
+- (FJSSymbol*)classMethodNamed:(NSString*)name;
+- (FJSSymbol*)instanceMethodNamed:(NSString*)name;
 
 @end
 
