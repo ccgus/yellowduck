@@ -14,17 +14,36 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef struct {
+    NSInteger type;
+    union {
+        char charValue;
+        short shortValue;
+        long longValue;
+        long long longlongValue;
+        float floatValue;
+        double doubleValue;
+        BOOL boolValue;
+        SEL selectorValue;
+        void *pointerValue;
+        void *structLocation;
+        char *cStringLocation;
+    } value;
+} FJSObjCValue;
+
 @interface FJSValue : NSObject
 
 @property (assign) BOOL isJSNative;
 @property (strong) FJSSymbol *symbol;
 @property (strong) id instance;
+@property (assign) FJSObjCValue cValue;
+
 
 + (instancetype)wrapperForJSObject:(nullable JSObjectRef)jso runtime:(FJSRuntime*)runtime;
 + (instancetype)wrapperWithSymbol:(FJSSymbol*)sym runtime:(FJSRuntime*)runtime;
 + (instancetype)wrapperWithInstance:(id)instance runtime:(FJSRuntime*)runtime;
++ (instancetype)wrapperWithClass:(Class)c runtime:(FJSRuntime*)runtime;
 
-+ (instancetype)wrapperWithClass:(Class)c;
 + (instancetype)wrapperWithInstanceMethod:(SEL)selector;
 + (instancetype)wrapperWithClassMethod:(SEL)selector;
 
@@ -47,7 +66,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)pushJSValueToNativeType:(NSString*)type;
 
 - (ffi_type*)FFIType;
-
+- (ffi_type*)FFITypeWithHint:(nullable NSString*)typeEncoding;
 
 
 @end

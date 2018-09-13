@@ -33,7 +33,7 @@ static JSClassRef FJSGlobalClass = NULL;
 static void FJS_initialize(JSContextRef ctx, JSObjectRef object);
 static void FJS_finalize(JSObjectRef object);
 JSValueRef FJS_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyNameJS, JSValueRef *exception);
-static bool FJS_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
+//static bool FJS_hasProperty(JSContextRef ctx, JSObjectRef object, JSStringRef propertyName);
 static JSValueRef FJS_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, JSObjectRef thisObject, size_t argumentCount, const JSValueRef arguments[], JSValueRef *exception);
 
 @implementation FJSRuntime
@@ -251,6 +251,8 @@ static JSValueRef FJS_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, J
     JSObjectRef r = JSObjectMake([[self jscContext] JSGlobalContextRef], FJSGlobalClass, (__bridge void *)(w));
     CFRetain((__bridge void *)w);
     
+    FMAssert(r);
+    
     return r;
 }
 
@@ -430,19 +432,27 @@ static JSValueRef FJS_callAsFunction(JSContextRef ctx, JSObjectRef functionJS, J
     FJSValue *objectToCall = [FJSValue wrapperForJSObject:thisObject runtime:runtime];
     FJSValue *functionToCall = [FJSValue wrapperForJSObject:functionJS runtime:runtime];
     
+    debug(@"Calling function '%@'", [[functionToCall symbol] name]);
+    
     NSMutableArray *args = [NSMutableArray arrayWithCapacity:argumentCount];
     for (size_t idx = 0; idx < argumentCount; idx++) {
-        FJSValue *arg = [FJSValue wrapperForJSObject:(JSObjectRef)arguments[idx] runtime:runtime];
+        JSValueRef jsArg = arguments[idx];
+        FJSValue *arg = [FJSValue wrapperForJSObject:(JSObjectRef)jsArg runtime:runtime];
         assert(arg);
         [args addObject:arg];
     }
     
     FJSFFI *ffi = [FJSFFI ffiWithFunction:functionToCall caller:objectToCall arguments:args cos:runtime];
     
-    
     FJSValue *ret = [ffi callFunction];
     
     JSValueRef returnRef = [ret JSValue];
+    
+    if ([[[functionToCall symbol] name] isEqualToString:@"new"]) {
+        assert(returnRef);
+    }
+    
+    //debug(@"returnRef: %@ for function '%@' (%@)", returnRef, [[functionToCall symbol] name], ret);
     
     return returnRef;
 }
@@ -466,6 +476,10 @@ void print(id s) {
 void FJSAssert(BOOL b) {
     FMAssert(b);
 }
+
+void FJSAssertObject(id o) {
+    FMAssert(o);
+};
 
 /*
  

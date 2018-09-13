@@ -12,6 +12,7 @@
 		CC63F72E212B858C00DCC9AA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CC63F72D212B858C00DCC9AA /* main.m */; };
 		CC7DE5532133AA9B00FBC8F7 /* FJSTestStuff.m in Sources */ = {isa = PBXBuildFile; fileRef = CC7DE5522133AA9B00FBC8F7 /* FJSTestStuff.m */; };
 		CC98DCEB212CCAC60066089C /* FJSBridgeParser.m in Sources */ = {isa = PBXBuildFile; fileRef = CC98DCEA212CCAC60066089C /* FJSBridgeParser.m */; };
+		CCD683A5214B26F90068B836 /* FJSUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = CCD683A4214B26F90068B836 /* FJSUtil.m */; };
 		CCE403BB212CBAB70006CDE7 /* FJSValue.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE403BA212CBAB70006CDE7 /* FJSValue.m */; };
 /* End PBXBuildFile section */
 
@@ -38,6 +39,8 @@
 		CC7DE5522133AA9B00FBC8F7 /* FJSTestStuff.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FJSTestStuff.m; sourceTree = "<group>"; };
 		CC98DCE9212CCAC60066089C /* FJSBridgeParser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FJSBridgeParser.h; sourceTree = "<group>"; };
 		CC98DCEA212CCAC60066089C /* FJSBridgeParser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FJSBridgeParser.m; sourceTree = "<group>"; };
+		CCD683A3214B26F90068B836 /* FJSUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FJSUtil.h; sourceTree = "<group>"; };
+		CCD683A4214B26F90068B836 /* FJSUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FJSUtil.m; sourceTree = "<group>"; };
 		CCE403B9212CBAB70006CDE7 /* FJSValue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FJSValue.h; sourceTree = "<group>"; };
 		CCE403BA212CBAB70006CDE7 /* FJSValue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FJSValue.m; sourceTree = "<group>"; };
 		CCE5EFFD2135094D00EA6D7F /* yd.bridgesupport */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = yd.bridgesupport; path = bridgesupport/yd.bridgesupport; sourceTree = SOURCE_ROOT; };
@@ -85,6 +88,8 @@
 				CC7DE5512133AA9B00FBC8F7 /* FJSTestStuff.h */,
 				CC7DE5522133AA9B00FBC8F7 /* FJSTestStuff.m */,
 				CCE5EFFD2135094D00EA6D7F /* yd.bridgesupport */,
+				CCD683A3214B26F90068B836 /* FJSUtil.h */,
+				CCD683A4214B26F90068B836 /* FJSUtil.m */,
 			);
 			path = yd;
 			sourceTree = "<group>";
@@ -150,6 +155,7 @@
 				CC98DCEB212CCAC60066089C /* FJSBridgeParser.m in Sources */,
 				CC4D2FC3212B8688009F77EC /* FJSRuntime.m in Sources */,
 				CCE403BB212CBAB70006CDE7 /* FJSValue.m in Sources */,
+				CCD683A5214B26F90068B836 /* FJSUtil.m in Sources */,
 				CC63F72E212B858C00DCC9AA /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

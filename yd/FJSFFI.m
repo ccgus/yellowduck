@@ -9,6 +9,7 @@
 #import "FJSFFI.h"
 #import "FJSValue.h"
 #import "FJSRuntime.h"
+#import "FJSUtil.h"
 #import <objc/runtime.h>
 #import <dlfcn.h>
 
@@ -58,6 +59,7 @@
         NSUInteger methodArgumentCount = [methodSignature numberOfArguments] - 2;
         if (methodArgumentCount != [_args count]) {
             NSString *reason = [NSString stringWithFormat:@"ObjC method %@ requires %lu %@, but JavaScript passed %zd %@", NSStringFromSelector(selector), methodArgumentCount, (methodArgumentCount == 1 ? @"argument" : @"arguments"), [_args count], ([_args count] == 1 ? @"argument" : @"arguments")];
+            debug(@"reason: '%@'", reason);
             assert(NO);
 //            NSException *e = [NSException exceptionWithName:MORuntimeException reason:reason userInfo:nil];
 //            if (exception != NULL) {
@@ -71,19 +73,20 @@
         // Invoke
         [invocation invoke];
         
-        const char * returnType = [methodSignature methodReturnType];
+        const char *returnType = [methodSignature methodReturnType];
         JSValueRef returnValue = NULL;
-        if (strcmp(returnType, @encode(void)) == 0) {
+        if (FJSCharEquals(returnType, @encode(void))) {
             returnValue = JSValueMakeUndefined([_runtime contextRef]);
             returnWrapper = [FJSValue wrapperForJSObject:(JSObjectRef)returnValue runtime:_runtime];
         }
         // id
-        else if (strcmp(returnType, @encode(id)) == 0
-                 || strcmp(returnType, @encode(Class)) == 0) {
+        else if (FJSCharEquals(returnType, @encode(id)) || FJSCharEquals(returnType, @encode(Class))) {
             id object = nil;
             [invocation getReturnValue:&object];
             
             CFRetain((CFTypeRef)object);
+            
+            FMAssert(_runtime);
             
             returnWrapper = [FJSValue wrapperWithInstance:object runtime:_runtime];
             
@@ -117,10 +120,9 @@
     void *callAddress = dlsym(RTLD_DEFAULT, [functionName UTF8String]);
 
     assert(callAddress);
+    FMAssert(_runtime);
     
     FJSValue *returnWrapper = [functionSymbol returnValue] ? [FJSValue wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
-    
-    BOOL objCCall = NO;
     
     // Prepare ffi
     ffi_cif cif;
@@ -129,9 +131,6 @@
     
     // Build the arguments
     unsigned int effectiveArgumentCount = (unsigned int)[_args count];
-    if (objCCall) {
-        effectiveArgumentCount += 2;
-    }
 
     if (effectiveArgumentCount > 0) {
         args = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
@@ -150,7 +149,7 @@
                 [arg setSymbol:argSym];
             }
             
-            args[idx]   = [arg FFIType];
+            args[idx]   = [arg FFITypeWithHint:[argSym runtimeType]];
             values[idx] = [arg objectStorage];
         }
     }
@@ -169,6 +168,8 @@
             
             if (returnWrapper) {
                 
+                debug(@"[returnWrapper instance]: '%@'", [returnWrapper instance]);
+                
                 if ([returnWrapper instance]) {
                     
                     // Yes, this only works for objc types. I'm building things up here…
@@ -184,12 +185,7 @@
         }
         @catch (NSException *e) {
             debug(@"shit: %@", e);
-            if (effectiveArgumentCount > 0) {
-                free(args);
-                free(values);
-            }
-            
-            return NULL;
+            returnWrapper = nil;
         }
     }
     

@@ -5,6 +5,9 @@
 <class name='FJSTestStuff'>
     <method selector='testMethod'>
     </method>
+    <method class_method='true' selector='jsnew'>
+        <retval type='@'/>
+    </method>
 </class>
 
 <function name='print'>
@@ -13,7 +16,11 @@
 
 
 <function name='FJSAssert'>
-    <arg type='b'/>
+    <arg type='B'/>
+</function>
+
+<function name='FJSAssertObject'>
+    <arg type='@'/>
 </function>
 
 

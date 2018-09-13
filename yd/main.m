@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
-        [runtime evaluateScript:@"var c = FJSTestStuff.new(); FJSAssert(c != null);"];
+        [runtime evaluateScript:@"var c = FJSTestStuff.new(); FJSAssertObject(c); FJSAssert(c != null);"];
         
         [runtime evaluateScript:@"print('Hello?');"];
         [runtime evaluateScript:@"print(FJSMethodReturnNSDictionary());"];
