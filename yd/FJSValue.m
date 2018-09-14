@@ -26,7 +26,6 @@
 
 - (void)dealloc {
     if ([self isInstance]) {
-        debug(@"Releasing %@", [self instance]);
         CFRelease((__bridge CFTypeRef)([self instance]));
     }
 }
