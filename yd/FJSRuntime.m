@@ -324,6 +324,8 @@ JSValueRef FJS_getGlobalProperty(JSContextRef ctx, JSObjectRef object, JSStringR
             assert(class);
             
             FJSValue *w = [FJSValue wrapperWithSymbol:sym runtime:runtime];
+            
+            
             [w setInstance:class];
             
             debug(@"FJSJSWrapper class: '%@'", w);

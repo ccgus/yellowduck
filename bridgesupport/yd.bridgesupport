@@ -86,6 +86,11 @@
     <arg type='B'/>
 </function>
 
+<function name='FJSMethodNegateBOOL'>
+    <arg type='B'/>
+    <retval type='B'/>
+</function>
+
 <function name='FJSMethodPleasePassNSStringClass'>
     <arg type='#'/>
 </function>

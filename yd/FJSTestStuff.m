@@ -109,6 +109,12 @@ void FJSMethodPleasePassNegativeBOOL(BOOL b) {
     FJSTestStuffTestPassed = !b;
 }
 
+
+BOOL FJSMethodNegateBOOL(BOOL b) {
+    return !b;
+}
+
+
 void FJSMethodPleasePassNSStringClass(Class c) {
     FJSTestStuffTestPassed = c == [NSString class];
 }
@@ -120,8 +126,8 @@ void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM(SE
 NSDictionary * FJSMethodReturnNSDictionary(void) {
     return @{@"theKey": @(42)};
 }
+
 void FJSMethodCheckNSDictionary(NSDictionary *d) {
-    
     NSNumber *n = [d objectForKey:@"theKey"];
     FJSTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 42;
 }

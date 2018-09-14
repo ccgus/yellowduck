@@ -35,7 +35,7 @@
 }
 
 - (nullable FJSValue*)objcInvoke {
-    assert([_caller instance]);
+    assert([_caller cValue].value.pointerValue);
     FJSSymbol *functionSymbol = [_f symbol];
     assert(functionSymbol);
     NSString *methodName = [functionSymbol name];
@@ -168,16 +168,8 @@
             
             if (returnWrapper) {
                 
-                debug(@"[returnWrapper instance]: '%@'", [returnWrapper instance]);
-                
-                if ([returnWrapper instance]) {
-                    
-                    // Yes, this only works for objc types. I'm building things up here…
-                    // Also, I'm in a pizza coma right now zzzzzzz
+                if ([returnWrapper isInstance]) {
                     CFRetain((CFTypeRef)[returnWrapper instance]);
-                }
-                else {
-                    debug(@"got a void return on a function that was supposed to return a value.");
                 }
             }
             

@@ -18,9 +18,6 @@
 @interface FJSValue ()
 
 @property (weak) FJSRuntime *runtime;
-@property (assign) Class class;
-@property (assign) SEL instanceSelector;
-@property (assign) SEL classSelector;
 @property (assign) JSObjectRef nativeJSObj;
 
 @end
@@ -28,7 +25,10 @@
 @implementation FJSValue
 
 - (void)dealloc {
-    //NSLog(@"%s:%d", __FUNCTION__, __LINE__);
+    if ([self isInstance]) {
+        debug(@"Releasing %@", [self instance]);
+        CFRelease((__bridge CFTypeRef)([self instance]));
+    }
 }
 
 
@@ -59,6 +59,10 @@
     [cw setSymbol:sym];
     [cw setRuntime:runtime];
     
+    if ([[sym symbolType] isEqualToString:@"retval"]) {
+        cw->_cValue.type = [[sym runtimeType] UTF8String][0];
+    }
+    
     return cw;
 }
 
@@ -76,32 +80,38 @@
     [cw setRuntime:runtime];
     
     return cw;
-    
 }
 
-+ (instancetype)wrapperWithInstanceMethod:(SEL)selector {
-    FJSValue *cw = [[self alloc] init];
-    [cw setInstanceSelector:selector];
-    
-    return cw;
-}
-
-+ (instancetype)wrapperWithClassMethod:(SEL)selector {
-    FJSValue *cw = [[self alloc] init];
-    [cw setClassSelector:selector];
-    
-    return cw;
-    
-}
 
 - (BOOL)isClass {
-    return _class != nil;
+    return _cValue.type == _C_CLASS;
 }
 
 - (BOOL)isInstance {
-    return _instance != nil;
+    return _cValue.type == _C_ID;
 }
+
+- (id)instance {
+    return (__bridge id)_cValue.value.pointerValue;
+}
+
+- (Class)rtClass {
+    return (__bridge Class)_cValue.value.pointerValue;
+}
+
+- (void)setInstance:(id)o {
+    FMAssert(!_cValue.value.pointerValue);
     
+    CFRetain((__bridge CFTypeRef)(o));
+    _cValue.type = _C_ID;
+    _cValue.value.pointerValue = (__bridge void * _Nonnull)(o);
+}
+
+- (void)setClass:(Class)c {
+    _cValue.type = _C_CLASS;
+    _cValue.value.pointerValue = (__bridge void * _Nonnull)(c);
+}
+
 - (BOOL)isInstanceMethod {
     return [[_symbol symbolType] isEqualToString:@"method"];
 }
@@ -119,18 +129,7 @@
 }
 
 - (BOOL)hasClassMethodNamed:(NSString*)m {
-    return [_class respondsToSelector:NSSelectorFromString(m)];
-}
-
-- (instancetype)wrapperForClassMethodNamed:(NSString*)m {
-    
-    assert(_class);
-    
-    FJSValue *w = [FJSValue new];
-    [w setClassSelector:NSSelectorFromString(m)];
-    [w setClass:_class];
-    
-    return w;
+    return [[self rtClass] respondsToSelector:NSSelectorFromString(m)];
 }
 
 - (id)callMethod {
@@ -144,9 +143,11 @@
         return _nativeJSObj;
     }
     
-    if (_instance) {
+    JSValueRef vr = nil;
+    
+    if ([self isInstance]) {
         
-        JSValueRef vr = [FJSValue nativeObjectToJSValue:_instance inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
+        vr = [FJSValue nativeObjectToJSValue:[self instance] inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
         
         if (vr) {
             return vr;
@@ -160,16 +161,17 @@
         return vr;
     }
     
-    return nil;
+    if (_cValue.type == _C_BOOL) {
+        vr = JSValueMakeBoolean([[_runtime jscContext] JSGlobalContextRef], _cValue.value.boolValue);
+    }
+    
+    return vr;
 }
 
 - (void*)objectStorage {
     
-    if (_cValue.type) {
-        return &_cValue.value;
-    }
-    
-    return &_instance;
+    FMAssert(_cValue.type);
+    return  &_cValue.value;
 }
 
 - (ffi_type*)FFIType {
@@ -193,7 +195,7 @@
     
     debug(@"NO SYMBOL IN WRAPPER: %@", self);
     
-    if (_instance) {
+    if (_cValue.type == _C_ID) {
         return &ffi_type_pointer;
     }
     
@@ -202,8 +204,8 @@
 
 - (nullable JSValueRef)toJSString {
     // TODO: check for numbers, etc, and convert them to the right JS type
-    debug(@"_instance: %@", _instance);
-    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[_instance description]);
+    debug(@"_instance: %@", [self instance]);
+    JSStringRef string = JSStringCreateWithCFString((__bridge CFStringRef)[[self instance] description]);
     JSValueRef value = JSValueMakeString([[_runtime jscContext] JSGlobalContextRef], string);
     JSStringRelease(string);
     return value;
@@ -306,10 +308,11 @@
         
     }
     
-    _instance = [FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
+    [self setInstance:[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]]];
     
+    debug(@"[self instance]: '%@'", [self instance]);
     
-    return _instance != nil;
+    return [self instance] != nil;
 }
 
 + (id)nativeObjectFromJSValue:(JSValueRef)jsValue ofType:(NSString*)typeEncoding inJSContext:(JSContextRef)context {

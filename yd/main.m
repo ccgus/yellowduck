@@ -21,10 +21,22 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"print(FJSMethodStringSringArgStringReturn('Hello', 'World'))"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassNegativeBOOL(FJSMethodNegateBOOL(true));"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassPositiveBOOL(FJSMethodNegateBOOL(false));"];
+        assert(FJSTestStuffTestPassed);
         
         FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassNSStringClass(NSString.class());"];
         assert(FJSTestStuffTestPassed);
+        
         
         FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassNegativeBOOL(false);"];
@@ -101,9 +113,6 @@ int main(int argc, const char * argv[]) {
         [runtime evaluateScript:@"FJSMethodCheckNSDictionary(FJSMethodReturnNSDictionary());"];
         assert(FJSTestStuffTestPassed);
         
-        FJSTestStuffTestPassed = NO;
-        [runtime evaluateScript:@"print(FJSMethodStringSringArgStringReturn('Hello', 'World'))"];
-        assert(FJSTestStuffTestPassed);
         
         FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassNSNumber3(3);"];

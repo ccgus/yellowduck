@@ -15,7 +15,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef struct {
-    NSInteger type;
+    char type;
     union {
         char charValue;
         unsigned char ucharValue;
@@ -41,7 +41,6 @@ typedef struct {
 
 @property (assign) BOOL isJSNative;
 @property (strong) FJSSymbol *symbol;
-@property (strong) id instance;
 @property (assign) FJSObjCValue cValue;
 
 
@@ -49,9 +48,6 @@ typedef struct {
 + (instancetype)wrapperWithSymbol:(FJSSymbol*)sym runtime:(FJSRuntime*)runtime;
 + (instancetype)wrapperWithInstance:(id)instance runtime:(FJSRuntime*)runtime;
 + (instancetype)wrapperWithClass:(Class)c runtime:(FJSRuntime*)runtime;
-
-+ (instancetype)wrapperWithInstanceMethod:(SEL)selector;
-+ (instancetype)wrapperWithClassMethod:(SEL)selector;
 
 - (BOOL)isClass;
 - (BOOL)isInstance;
@@ -63,10 +59,13 @@ typedef struct {
 
 - (BOOL)hasClassMethodNamed:(NSString*)m;
 
-- (instancetype)wrapperForClassMethodNamed:(NSString*)m;
-
 - (nullable JSValueRef)JSValue;
 - (nullable JSValueRef)toJSString;
+
+- (id)instance;
+- (Class)rtClass;
+- (void)setInstance:(id)o;
+- (void)setClass:(Class)c;
 
 - (void*)objectStorage;
 - (BOOL)pushJSValueToNativeType:(NSString*)type;
