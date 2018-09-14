@@ -165,14 +165,7 @@
         @try {
             ffi_call(&cif, callAddress, returnStorage, values);
             
-            
-            if (returnWrapper) {
-                
-                if ([returnWrapper isInstance]) {
-                    CFRetain((CFTypeRef)[returnWrapper instance]);
-                }
-            }
-            
+            [returnWrapper retainReturnValue];
             
         }
         @catch (NSException *e) {

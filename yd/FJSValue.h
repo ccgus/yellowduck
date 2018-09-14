@@ -66,6 +66,7 @@ typedef struct {
 - (Class)rtClass;
 - (void)setInstance:(id)o;
 - (void)setClass:(Class)c;
+- (void)retainReturnValue;
 
 - (void*)objectStorage;
 - (BOOL)pushJSValueToNativeType:(NSString*)type;

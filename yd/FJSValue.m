@@ -106,6 +106,17 @@
     _cValue.value.pointerValue = (__bridge void * _Nonnull)(o);
 }
 
+- (void)retainReturnValue {
+    
+    FMAssert([[_symbol symbolType] isEqualToString:@"retval"]); // Why are we here otherwise?
+    
+    if ([[_symbol symbolType] isEqualToString:@"retval"] && [[_symbol runtimeType] isEqualToString:@"@"]) {
+        // OK, we've got an instance set in the return storage, but it hasn't been retained yet. Let's make that happen.
+        CFRetain((CFTypeRef)_cValue.value.pointerValue);
+    }
+    
+}
+
 - (void)setClass:(Class)c {
     _cValue.type = _C_CLASS;
     _cValue.value.pointerValue = (__bridge void * _Nonnull)(c);
