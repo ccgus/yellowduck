@@ -277,6 +277,18 @@
         return YES;
     }
     
+    if ([type isEqualToString:@"f"]) {
+        _cValue.type = _C_FLT;
+        _cValue.value.floatValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] floatValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"d"]) {
+        _cValue.type = _C_DBL;
+        _cValue.value.doubleValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] doubleValue];
+        return YES;
+    }
+    
     
     if ([type isEqualToString:@":"]) {
         
@@ -369,6 +381,16 @@
     
     if ([typeEncoding isEqualToString:@"Q"]) {
         unsigned long long v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"f"]) {
+        float v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"d"]) {
+        double v = JSValueToNumber(context, jsValue, NULL);
         return @(v);
     }
     

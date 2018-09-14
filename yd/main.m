@@ -23,6 +23,18 @@ int main(int argc, const char * argv[]) {
         
         
         FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassFloat123(123);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassDouble123(123);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM('dataUsingEncoding:allowLossyConversion:', 'm');"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelector('dataUsingEncoding:allowLossyConversion:');"];
         assert(FJSTestStuffTestPassed);
         

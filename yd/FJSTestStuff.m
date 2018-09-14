@@ -85,12 +85,24 @@ void FJSMethodPleasePassCCharM(char c) {
     FJSTestStuffTestPassed = c == 'm';
 }
 
+void FJSMethodPleasePassFloat123(float f) {
+    FJSTestStuffTestPassed = fabsf(f - 123.0f) <= 0.000001;
+}
+
+void FJSMethodPleasePassDouble123(double d) {
+    FJSTestStuffTestPassed = fabs(d - 123.0)  <= 0.000001;
+}
+
 void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelector(SEL selector) {
     FJSTestStuffTestPassed = @selector(dataUsingEncoding:allowLossyConversion:) == selector;
 }
 
 void FJSMethodPleasePassUnsignedCCharM(unsigned char c) {
     FJSTestStuffTestPassed = c == 'm';
+}
+
+void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM(SEL selector, char c) {
+    FJSTestStuffTestPassed = @selector(dataUsingEncoding:allowLossyConversion:) == selector && c == 'm';
 }
 
 NSDictionary * FJSMethodReturnNSDictionary(void) {

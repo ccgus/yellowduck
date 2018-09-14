@@ -65,6 +65,18 @@
     <arg type=':'/>
 </function>
 
+<function name='FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM'>
+    <arg type=':'/>
+    <arg type='c'/>
+</function>
+
+<function name='FJSMethodPleasePassFloat123'>
+    <arg type='f'/>
+</function>
+
+<function name='FJSMethodPleasePassDouble123'>
+    <arg type='d'/>
+</function>
 
 <function name='FJSMethodPleasePassSignedShortNumber3'>
     <arg type='s'/>
