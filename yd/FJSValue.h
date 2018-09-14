@@ -20,10 +20,13 @@ typedef struct {
         char charValue;
         unsigned char ucharValue;
         short shortValue;
+        unsigned short ushortValue;
         int intValue;
         int uintValue;
         long longValue;
-        long long longlongValue;
+        unsigned long unsignedLongValue;
+        long long longLongValue;
+        unsigned long long unsignedLongLongValue;
         float floatValue;
         double doubleValue;
         BOOL boolValue;

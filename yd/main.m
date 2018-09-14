@@ -21,6 +21,32 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassSignedLongNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassUnsignedLongNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassSignedLongLongNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassUnsignedLongLongNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassSignedShortNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassUnsignedShortNumber3(3);"];
+        assert(FJSTestStuffTestPassed);
+        
         FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassCCharM('m');"];
         assert(FJSTestStuffTestPassed);

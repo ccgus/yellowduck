@@ -43,6 +43,32 @@
     <arg type='I'/>
 </function>
 
+
+<function name='FJSMethodPleasePassSignedLongNumber3'>
+    <arg type='l'/>
+</function>
+
+<function name='FJSMethodPleasePassUnsignedLongNumber3'>
+    <arg type='L'/>
+</function>
+
+<function name='FJSMethodPleasePassSignedLongLongNumber3'>
+    <arg type='q'/>
+</function>
+
+<function name='FJSMethodPleasePassUnsignedLongLongNumber3'>
+    <arg type='Q'/>
+</function>
+
+
+<function name='FJSMethodPleasePassSignedShortNumber3'>
+    <arg type='s'/>
+</function>
+
+<function name='FJSMethodPleasePassUnsignedShortNumber3'>
+    <arg type='S'/>
+</function>
+
 <function name='FJSMethodPleasePassCCharM'>
     <arg type='c'/>
 </function>

@@ -48,11 +48,36 @@ void FJSMethodPleasePassNSNumber3(NSNumber *n) {
     FJSTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 3;
 }
 
+
+void FJSMethodPleasePassSignedShortNumber3(short n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassUnsignedShortNumber3(unsigned short n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
 void FJSMethodPleasePassSignedIntNumber3(int n) {
     FJSTestStuffTestPassed = n == 3;
 }
 
 void FJSMethodPleasePassUnsignedIntNumber3(uint n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassSignedLongNumber3(long n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassUnsignedLongNumber3(unsigned long n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassSignedLongLongNumber3(long long n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassUnsignedLongLongNumber3(unsigned long long n) {
     FJSTestStuffTestPassed = n == 3;
 }
 

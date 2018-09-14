@@ -217,6 +217,30 @@
         return YES;
     }
     
+    if ([type isEqualToString:@"s"]) {
+        _cValue.type = _C_SHT;
+        _cValue.value.shortValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] shortValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"S"]) {
+        _cValue.type = _C_USHT;
+        _cValue.value.ushortValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedShortValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"c"]) {
+        _cValue.type = _C_CHR;
+        _cValue.value.charValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] charValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"C"]) {
+        _cValue.type = _C_UCHR;
+        _cValue.value.ucharValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedCharValue];
+        return YES;
+    }
+    
     if ([type isEqualToString:@"i"]) {
         _cValue.type = _C_INT;
         _cValue.value.intValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] intValue];
@@ -229,14 +253,27 @@
         return YES;
     }
     
-    if ([type isEqualToString:@"c"]) {
-        _cValue.type = _C_CHR;
-        _cValue.value.charValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] charValue];
+    if ([type isEqualToString:@"l"]) {
+        _cValue.type = _C_LNG;
+        _cValue.value.longValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] longValue];
         return YES;
     }
-    if ([type isEqualToString:@"C"]) {
-        _cValue.type = _C_UCHR;
-        _cValue.value.ucharValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedCharValue];
+    
+    if ([type isEqualToString:@"L"]) {
+        _cValue.type = _C_ULNG;
+        _cValue.value.unsignedLongValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedLongValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"q"]) {
+        _cValue.type = _C_LNG_LNG;
+        _cValue.value.longLongValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] longLongValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"Q"]) {
+        _cValue.type = _C_ULNG_LNG;
+        _cValue.value.unsignedLongLongValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedLongLongValue];
         return YES;
     }
     
@@ -276,6 +313,16 @@
         return @(v);
     }
     
+    if ([typeEncoding isEqualToString:@"s"]) {
+        short v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"S"]) {
+        unsigned short v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
     if ([typeEncoding isEqualToString:@"i"]) {
         int v = JSValueToNumber(context, jsValue, NULL);
         return @(v);
@@ -283,6 +330,28 @@
     
     if ([typeEncoding isEqualToString:@"I"]) {
         uint v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    
+    if ([typeEncoding isEqualToString:@"l"]) {
+        long v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"L"]) {
+        unsigned long v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    
+    if ([typeEncoding isEqualToString:@"q"]) {
+        long long v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"Q"]) {
+        unsigned long long v = JSValueToNumber(context, jsValue, NULL);
         return @(v);
     }
     
@@ -307,7 +376,14 @@
             NSNumber *n = @(c);
             FMAssert(FJSCharEquals([n objCType], @encode(char)));
 #ifdef DEBUG
+            
+//            printf("@encode(short) %s, %s, %c, %lu\n", @encode(short), [[NSNumber numberWithShort:'a'] objCType], _C_SHT, sizeof(short));
+//            printf("@encode(char) %s, %s, %c, %lu\n",     @encode(char),  [[NSNumber numberWithChar:'a'] objCType], _C_CHR, sizeof(char));
+//            printf("@encode(unsigned char) %s, %s, %c, %lu\n", @encode(unsigned char), [[NSNumber numberWithUnsignedChar:'a'] objCType], _C_UCHR, sizeof(unsigned char));
+            
             // NSNumber stores shorts and unsigned chars the same. Really!
+            FMAssert(@encode(unsigned char) != @encode(short));
+            FMAssert(@encode(unsigned char) == @encode(unsigned char));
             FMAssert([[NSNumber numberWithUnsignedChar:'a'] objCType] == [[NSNumber numberWithShort:'a'] objCType]);
             FMAssert([[NSNumber numberWithUnsignedChar:'a'] isEqualToNumber:[NSNumber numberWithShort:'a']]);
 #endif
