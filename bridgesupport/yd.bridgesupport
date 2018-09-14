@@ -61,6 +61,11 @@
 </function>
 
 
+<function name='FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelector'>
+    <arg type=':'/>
+</function>
+
+
 <function name='FJSMethodPleasePassSignedShortNumber3'>
     <arg type='s'/>
 </function>

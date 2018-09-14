@@ -277,6 +277,23 @@
         return YES;
     }
     
+    
+    if ([type isEqualToString:@":"]) {
+        
+        if (JSValueIsString([[_runtime jscContext] JSGlobalContextRef], _nativeJSObj)) {
+            JSStringRef resultStringJS = JSValueToStringCopy([[_runtime jscContext] JSGlobalContextRef], _nativeJSObj, NULL);
+            id o = (NSString *)CFBridgingRelease(JSStringCopyCFString(kCFAllocatorDefault, resultStringJS));
+            JSStringRelease(resultStringJS);
+            _cValue.type = _C_SEL;
+            _cValue.value.selectorValue = NSSelectorFromString(o);
+            return YES;
+        }
+        
+        FMAssert(NO);
+        return NO;
+        
+    }
+    
     _instance = [FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
     
     
@@ -284,8 +301,6 @@
 }
 
 + (id)nativeObjectFromJSValue:(JSValueRef)jsValue ofType:(NSString*)typeEncoding inJSContext:(JSContextRef)context {
-    
-    debug(@"typeEncoding: '%@'", typeEncoding);
     
     if ([typeEncoding isEqualToString:@"@"]) {
         if (JSValueIsString(context, jsValue)) {
@@ -307,6 +322,8 @@
         }
         
     }
+    
+    
     
     if ([typeEncoding isEqualToString:@"B"]) {
         bool v = JSValueToBoolean(context, jsValue);

@@ -23,6 +23,10 @@ int main(int argc, const char * argv[]) {
         
         
         FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelector('dataUsingEncoding:allowLossyConversion:');"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassSignedLongNumber3(3);"];
         assert(FJSTestStuffTestPassed);
         

@@ -85,6 +85,10 @@ void FJSMethodPleasePassCCharM(char c) {
     FJSTestStuffTestPassed = c == 'm';
 }
 
+void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelector(SEL selector) {
+    FJSTestStuffTestPassed = @selector(dataUsingEncoding:allowLossyConversion:) == selector;
+}
+
 void FJSMethodPleasePassUnsignedCCharM(unsigned char c) {
     FJSTestStuffTestPassed = c == 'm';
 }
