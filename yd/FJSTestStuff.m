@@ -101,6 +101,14 @@ void FJSMethodPleasePassUnsignedCCharM(unsigned char c) {
     FJSTestStuffTestPassed = c == 'm';
 }
 
+void FJSMethodPleasePassPositiveBOOL(BOOL b) {
+    FJSTestStuffTestPassed = b;
+}
+
+void FJSMethodPleasePassNegativeBOOL(BOOL b) {
+    FJSTestStuffTestPassed = !b;
+}
+
 void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM(SEL selector, char c) {
     FJSTestStuffTestPassed = @selector(dataUsingEncoding:allowLossyConversion:) == selector && c == 'm';
 }

@@ -78,6 +78,14 @@
     <arg type='d'/>
 </function>
 
+<function name='FJSMethodPleasePassPositiveBOOL'>
+    <arg type='B'/>
+</function>
+
+<function name='FJSMethodPleasePassNegativeBOOL'>
+    <arg type='B'/>
+</function>
+
 <function name='FJSMethodPleasePassSignedShortNumber3'>
     <arg type='s'/>
 </function>

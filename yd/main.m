@@ -23,6 +23,15 @@ int main(int argc, const char * argv[]) {
         
         
         FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassNegativeBOOL(false);"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassPositiveBOOL(true);"];
+        assert(FJSTestStuffTestPassed);
+        
+        
+        FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassFloat123(123);"];
         assert(FJSTestStuffTestPassed);
         
