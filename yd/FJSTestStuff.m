@@ -109,6 +109,10 @@ void FJSMethodPleasePassNegativeBOOL(BOOL b) {
     FJSTestStuffTestPassed = !b;
 }
 
+void FJSMethodPleasePassNSStringClass(Class c) {
+    FJSTestStuffTestPassed = c == [NSString class];
+}
+
 void FJSMethodPleasePassDataUsingEncodingAllowLossyConversionSelectorAndCharM(SEL selector, char c) {
     FJSTestStuffTestPassed = @selector(dataUsingEncoding:allowLossyConversion:) == selector && c == 'm';
 }

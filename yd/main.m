@@ -23,6 +23,10 @@ int main(int argc, const char * argv[]) {
         
         
         FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassNSStringClass(NSString.class());"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"FJSMethodPleasePassNegativeBOOL(false);"];
         assert(FJSTestStuffTestPassed);
         

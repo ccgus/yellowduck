@@ -86,6 +86,10 @@
     <arg type='B'/>
 </function>
 
+<function name='FJSMethodPleasePassNSStringClass'>
+    <arg type='#'/>
+</function>
+
 <function name='FJSMethodPleasePassSignedShortNumber3'>
     <arg type='s'/>
 </function>
