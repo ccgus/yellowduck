@@ -18,7 +18,10 @@ typedef struct {
     NSInteger type;
     union {
         char charValue;
+        unsigned char ucharValue;
         short shortValue;
+        int intValue;
+        int uintValue;
         long longValue;
         long long longlongValue;
         float floatValue;

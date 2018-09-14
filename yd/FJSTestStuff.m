@@ -48,6 +48,22 @@ void FJSMethodPleasePassNSNumber3(NSNumber *n) {
     FJSTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 3;
 }
 
+void FJSMethodPleasePassSignedIntNumber3(int n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassUnsignedIntNumber3(uint n) {
+    FJSTestStuffTestPassed = n == 3;
+}
+
+void FJSMethodPleasePassCCharM(char c) {
+    FJSTestStuffTestPassed = c == 'm';
+}
+
+void FJSMethodPleasePassUnsignedCCharM(unsigned char c) {
+    FJSTestStuffTestPassed = c == 'm';
+}
+
 NSDictionary * FJSMethodReturnNSDictionary(void) {
     return @{@"theKey": @(42)};
 }

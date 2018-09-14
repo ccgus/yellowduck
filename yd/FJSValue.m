@@ -13,6 +13,7 @@
 #import <objc/runtime.h>
 
 #define debug NSLog
+#define DEBUG
 
 @interface FJSValue ()
 
@@ -216,6 +217,29 @@
         return YES;
     }
     
+    if ([type isEqualToString:@"i"]) {
+        _cValue.type = _C_INT;
+        _cValue.value.intValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] intValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"I"]) {
+        _cValue.type = _C_UINT;
+        _cValue.value.uintValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedIntValue];
+        return YES;
+    }
+    
+    if ([type isEqualToString:@"c"]) {
+        _cValue.type = _C_CHR;
+        _cValue.value.charValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] charValue];
+        return YES;
+    }
+    if ([type isEqualToString:@"C"]) {
+        _cValue.type = _C_UCHR;
+        _cValue.value.ucharValue = [[FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]] unsignedCharValue];
+        return YES;
+    }
+    
     _instance = [FJSValue nativeObjectFromJSValue:_nativeJSObj ofType:type inJSContext:[[_runtime jscContext] JSGlobalContextRef]];
     
     
@@ -250,6 +274,47 @@
     if ([typeEncoding isEqualToString:@"B"]) {
         bool v = JSValueToBoolean(context, jsValue);
         return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"i"]) {
+        int v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"I"]) {
+        uint v = JSValueToNumber(context, jsValue, NULL);
+        return @(v);
+    }
+    
+    if ([typeEncoding isEqualToString:@"c"]) { // _C_CHR
+        
+        NSString *f = [self nativeObjectFromJSValue:jsValue ofType:@"@" inJSContext:context];
+        if ([f length]) {
+            char c = [f UTF8String][0];
+            NSNumber *n = @(c);
+            FMAssert(FJSCharEquals([n objCType], @encode(char)));
+            return n;
+        }
+        
+        return nil;
+    }
+    
+    if ([typeEncoding isEqualToString:@"C"]) { // _C_UCHR
+        
+        NSString *f = [self nativeObjectFromJSValue:jsValue ofType:@"@" inJSContext:context];
+        if ([f length]) {
+            char c = [f UTF8String][0];
+            NSNumber *n = @(c);
+            FMAssert(FJSCharEquals([n objCType], @encode(char)));
+#ifdef DEBUG
+            // NSNumber stores shorts and unsigned chars the same. Really!
+            FMAssert([[NSNumber numberWithUnsignedChar:'a'] objCType] == [[NSNumber numberWithShort:'a'] objCType]);
+            FMAssert([[NSNumber numberWithUnsignedChar:'a'] isEqualToNumber:[NSNumber numberWithShort:'a']]);
+#endif
+            return n;
+        }
+        
+        return nil;
     }
     
     assert(NO);

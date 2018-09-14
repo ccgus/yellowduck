@@ -35,6 +35,21 @@
     <arg type='@'/>
 </function>
 
+<function name='FJSMethodPleasePassSignedIntNumber3'>
+    <arg type='i'/>
+</function>
+
+<function name='FJSMethodPleasePassUnsignedIntNumber3'>
+    <arg type='I'/>
+</function>
+
+<function name='FJSMethodPleasePassCCharM'>
+    <arg type='c'/>
+</function>
+<function name='FJSMethodPleasePassUnsignedCCharM'>
+    <arg type='C'/>
+</function>
+
 <function name='FJSMethodNoArgsIDReturn'>
     <retval type='@'/>
 </function>
