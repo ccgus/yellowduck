@@ -106,9 +106,22 @@
 <function name='FJSMethodPleasePassCCharM'>
     <arg type='c'/>
 </function>
+
 <function name='FJSMethodPleasePassUnsignedCCharM'>
     <arg type='C'/>
 </function>
+
+<function name='FJSTestAddSignedChar'>
+    <arg type='c'/>
+    <retval type='c'/>
+</function>
+
+<function name='FJSTestAddUnsignedChar'>
+    <arg type='C'/>
+    <retval type='C'/>
+</function>
+
+
 
 <function name='FJSMethodNoArgsIDReturn'>
     <retval type='@'/>

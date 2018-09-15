@@ -21,6 +21,16 @@ int main(int argc, const char * argv[]) {
         
         //[cos evaluateScript:@"x = 10; log(x); print('Hello, World');"];
         
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassCCharM(FJSTestAddSignedChar('l'));"];
+        assert(FJSTestStuffTestPassed);
+        
+        FJSTestStuffTestPassed = NO;
+        [runtime evaluateScript:@"FJSMethodPleasePassUnsignedCCharM(FJSTestAddUnsignedChar('l'));"];
+        assert(FJSTestStuffTestPassed);
+        
+        
         FJSTestStuffTestPassed = NO;
         [runtime evaluateScript:@"print(FJSMethodStringSringArgStringReturn('Hello', 'World'))"];
         assert(FJSTestStuffTestPassed);

@@ -132,4 +132,13 @@ void FJSMethodCheckNSDictionary(NSDictionary *d) {
     FJSTestStuffTestPassed = [n isKindOfClass:[NSNumber class]] && [n integerValue] == 42;
 }
 
+char FJSTestAddSignedChar(char c) {
+    return c + 1;
+}
+
+
+unsigned char FJSTestAddUnsignedChar(char c) {
+    return c + 1;
+}
+
 

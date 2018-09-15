@@ -171,8 +171,51 @@
         return vr;
     }
     
-    if (_cValue.type == _C_BOOL) {
-        vr = JSValueMakeBoolean([[_runtime jscContext] JSGlobalContextRef], _cValue.value.boolValue);
+    switch (_cValue.type) {
+            
+        case _C_BOOL:
+            vr = JSValueMakeBoolean([[_runtime jscContext] JSGlobalContextRef], _cValue.value.boolValue);
+            break;
+            
+        case _C_CHR:
+        case _C_UCHR:
+        case _C_SHT:
+        case _C_USHT:
+        case _C_INT:
+        case _C_UINT:
+        case _C_LNG:
+        case _C_ULNG:
+        case _C_LNG_LNG:
+        case _C_ULNG_LNG:
+        case _C_FLT:
+        case _C_DBL: {
+            double number = 0;
+            switch (_cValue.type) {
+                case _C_CHR:        number = _cValue.value.charValue; break;
+                case _C_UCHR:       number = _cValue.value.ucharValue; break;
+                case _C_SHT:        number = _cValue.value.shortValue; break;
+                case _C_USHT:       number = _cValue.value.ushortValue; break;
+                case _C_INT:        number = _cValue.value.intValue; break;
+                case _C_UINT:       number = _cValue.value.uintValue; break;
+                case _C_LNG:        number = _cValue.value.longValue; break;
+                case _C_ULNG:       number = _cValue.value.unsignedLongValue; break;
+                case _C_LNG_LNG:    number = _cValue.value.longLongValue; break;
+                case _C_ULNG_LNG:   number = _cValue.value.unsignedLongLongValue; break;
+                case _C_FLT:        number = _cValue.value.floatValue; break;
+                case _C_DBL:        number = _cValue.value.doubleValue; break;
+            }
+            vr = JSValueMakeNumber([[_runtime jscContext] JSGlobalContextRef], number);
+            break;
+        }
+        
+        default:
+            FMAssert(NO);
+    
+    }
+    
+    
+    if (!vr) {
+        debug(@"Returning nil JSValue for %@", self);
     }
     
     return vr;
@@ -407,39 +450,17 @@
         return @(v);
     }
     
-    if ([typeEncoding isEqualToString:@"c"]) { // _C_CHR
+    if ([typeEncoding isEqualToString:@"c"] || [typeEncoding isEqualToString:@"C"]) { // _C_CHR, _C_UCHR
         
-        NSString *f = [self nativeObjectFromJSValue:jsValue ofType:@"@" inJSContext:context];
-        if ([f length]) {
+        id f = [self nativeObjectFromJSValue:jsValue ofType:@"@" inJSContext:context];
+        if ([f isKindOfClass:[NSString class]] && [f length]) {
             char c = [f UTF8String][0];
             NSNumber *n = @(c);
             FMAssert(FJSCharEquals([n objCType], @encode(char)));
             return n;
         }
-        
-        return nil;
-    }
-    
-    if ([typeEncoding isEqualToString:@"C"]) { // _C_UCHR
-        
-        NSString *f = [self nativeObjectFromJSValue:jsValue ofType:@"@" inJSContext:context];
-        if ([f length]) {
-            char c = [f UTF8String][0];
-            NSNumber *n = @(c);
-            FMAssert(FJSCharEquals([n objCType], @encode(char)));
-#ifdef DEBUG
-            
-//            printf("@encode(short) %s, %s, %c, %lu\n", @encode(short), [[NSNumber numberWithShort:'a'] objCType], _C_SHT, sizeof(short));
-//            printf("@encode(char) %s, %s, %c, %lu\n",     @encode(char),  [[NSNumber numberWithChar:'a'] objCType], _C_CHR, sizeof(char));
-//            printf("@encode(unsigned char) %s, %s, %c, %lu\n", @encode(unsigned char), [[NSNumber numberWithUnsignedChar:'a'] objCType], _C_UCHR, sizeof(unsigned char));
-            
-            // NSNumber stores shorts and unsigned chars the same. Really!
-            FMAssert(@encode(unsigned char) != @encode(short));
-            FMAssert(@encode(unsigned char) == @encode(unsigned char));
-            FMAssert([[NSNumber numberWithUnsignedChar:'a'] objCType] == [[NSNumber numberWithShort:'a'] objCType]);
-            FMAssert([[NSNumber numberWithUnsignedChar:'a'] isEqualToNumber:[NSNumber numberWithShort:'a']]);
-#endif
-            return n;
+        else if ([f isKindOfClass:[NSNumber class]]) {
+            return f;
         }
         
         return nil;
