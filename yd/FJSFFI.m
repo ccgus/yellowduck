@@ -122,19 +122,19 @@
     assert(callAddress);
     FMAssert(_runtime);
     
-    FJSValue *returnWrapper = [functionSymbol returnValue] ? [FJSValue wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
+    FJSValue *returnValue = [functionSymbol returnValue] ? [FJSValue wrapperWithSymbol:[functionSymbol returnValue] runtime:_runtime] : nil;
     
     // Prepare ffi
     ffi_cif cif;
-    ffi_type** args = NULL;
-    void** values = NULL;
+    ffi_type** ffiArgs = NULL;
+    void** ffiValues = NULL;
     
     // Build the arguments
     unsigned int effectiveArgumentCount = (unsigned int)[_args count];
 
     if (effectiveArgumentCount > 0) {
-        args = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
-        values = malloc(sizeof(void *) * effectiveArgumentCount);
+        ffiArgs = malloc(sizeof(ffi_type *) * effectiveArgumentCount);
+        ffiValues = malloc(sizeof(void *) * effectiveArgumentCount);
         
         
         for (NSInteger idx = 0; idx < [_args count]; idx++) {
@@ -149,37 +149,37 @@
                 [arg setSymbol:argSym];
             }
             
-            args[idx]   = [arg FFITypeWithHint:[argSym runtimeType]];
-            values[idx] = [arg objectStorage];
+            ffiArgs[idx]   = [arg FFITypeWithHint:[argSym runtimeType]];
+            ffiValues[idx] = [arg objectStorage];
         }
     }
     
-    ffi_type *returnType = returnWrapper ? [returnWrapper FFIType] : &ffi_type_void;
+    ffi_type *returnType = returnValue ? [returnValue FFIType] : &ffi_type_void;
     
-    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, returnType, args);
+    ffi_status prep_status = ffi_prep_cif(&cif, FFI_DEFAULT_ABI, effectiveArgumentCount, returnType, ffiArgs);
     
     // Call
     if (prep_status == FFI_OK) {
-        void *returnStorage = [returnWrapper objectStorage];
+        void *returnStorage = [returnValue objectStorage];
         
         @try {
-            ffi_call(&cif, callAddress, returnStorage, values);
+            ffi_call(&cif, callAddress, returnStorage, ffiValues);
             
-            [returnWrapper retainReturnValue];
+            [returnValue retainReturnValue];
             
         }
         @catch (NSException *e) {
             debug(@"shit: %@", e);
-            returnWrapper = nil;
+            returnValue = nil;
         }
     }
     
     if (effectiveArgumentCount > 0) {
-        free(args);
-        free(values);
+        free(ffiArgs);
+        free(ffiValues);
     }
     
-    return returnWrapper;
+    return returnValue;
 }
 
 + (ffi_type *)ffiTypeAddressForTypeEncoding:(char)encoding {
